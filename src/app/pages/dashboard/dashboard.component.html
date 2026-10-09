@@ -1,0 +1,110 @@
+<div class="dashboard-container">
+  <!-- Menú Lateral -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <h2>TALLER <span>PRO</span></h2>
+    </div>
+
+    <nav class="sidebar-menu">
+      <ul>
+        <!-- 1. GESTIÓN DEL TALLER -->
+        <li class="menu-category">TALLER</li>
+        
+        <li *ngIf="esRol('Administrador') || esRol('Mecanico')">
+          <a routerLink="/dashboard/ordenes-trabajo" routerLinkActive="active">
+            <span class="icon">📋</span> Órdenes de Trabajo
+          </a>
+        </li>
+
+        <li *ngIf="esRol('Administrador') || esRol('Mecanico')">
+          <a routerLink="/dashboard/diagnosticos" routerLinkActive="active">
+            <span class="icon">🔍</span> Diagnósticos
+          </a>
+        </li>
+
+        <li *ngIf="esRol('Administrador') || esRol('Mecanico')">
+          <a routerLink="/dashboard/reparaciones" routerLinkActive="active">
+            <span class="icon">🔧</span> Reparaciones
+          </a>
+        </li>
+
+        <li *ngIf="esRol('Administrador') || esRol('Mecanico') || esRol('Recepcionista')">
+          <a routerLink="/dashboard/vehiculos" routerLinkActive="active">
+            <span class="icon">🚗</span> Vehículos
+          </a>
+        </li>
+
+        <li *ngIf="esRol('Administrador') || esRol('Recepcionista')">
+          <a routerLink="/dashboard/clientes" routerLinkActive="active">
+            <span class="icon">👥</span> Clientes
+          </a>
+        </li>
+
+        <!-- 2. INVENTARIO -->
+        <li class="menu-category">INVENTARIO</li>
+
+        <li *ngIf="esRol('Administrador') || esRol('Mecanico')">
+          <a routerLink="/dashboard/repuestos" routerLinkActive="active">
+            <span class="icon">📦</span> Repuestos
+          </a>
+        </li>
+
+        <li *ngIf="esRol('Administrador')">
+          <a routerLink="/dashboard/categorias" routerLinkActive="active">
+            <span class="icon">🏷️</span> Categorías - Repuestos
+          </a>
+        </li>
+
+        <!-- 3. CONFIGURACIÓN Y ADMINISTRACIÓN -->
+        <li *ngIf="esRol('Administrador')" class="menu-category">ADMINISTRACIÓN</li>
+
+        <li *ngIf="esRol('Administrador')">
+          <a routerLink="/dashboard/mecanicos" routerLinkActive="active">
+            <span class="icon">👨‍🔧</span> Mecánicos
+          </a>
+        </li>
+
+        <li *ngIf="esRol('Administrador')">
+          <a routerLink="/dashboard/dependencias" routerLinkActive="active">
+            <span class="icon">🏢</span> Dependencias
+          </a>
+        </li>
+
+        <li *ngIf="esRol('Administrador')">
+          <a routerLink="/dashboard/roles" routerLinkActive="active">
+            <span class="icon">🛡️</span> Roles
+          </a>
+        </li>
+
+        <li *ngIf="esRol('Administrador')">
+          <a routerLink="/dashboard/permisos" routerLinkActive="active">
+            <span class="icon">🔑</span> Permisos
+          </a>
+        </li>
+      </ul>
+    </nav>
+
+    <div class="sidebar-footer">
+      <button (click)="cerrarSesion()" class="btn-logout">
+        <span>🚪</span> Cerrar Sesión
+      </button>
+    </div>
+  </aside>
+
+  <!-- Contenido Principal -->
+  <main class="main-content">
+    <header class="topbar">
+      <div class="user-info">
+        <span class="user-badge">
+          Bienvenido, <strong>{{ usuarioActual }}</strong>
+        </span>
+        <span class="role-tag">{{ rolActual }}</span>
+      </div>
+    </header>
+
+    <section class="content-body">
+      <!-- Aquí se renderizan las páginas hijas según la ruta elegida -->
+      <router-outlet></router-outlet>
+    </section>
+  </main>
+</div>

@@ -1,0 +1,175 @@
+<div class="modulo-container">
+  <!-- Header de la sección -->
+  <header class="modulo-header">
+    <div class="header-info">
+      <div class="title-with-badge">
+        <h2 class="title">Inventario de Repuestos</h2>
+        <span class="count-badge">{{ repuestosFiltrados.length }} Repuestos</span>
+      </div>
+      <p class="subtitle">Gestión de stock, códigos de pieza y precios unitarios</p>
+    </div>
+    
+    <button class="btn-primary" (click)="abrirModalCrear()">
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="12" y1="5" x2="12" y2="19"></line>
+        <line x1="5" y1="12" x2="19" y2="12"></line>
+      </svg>
+      <span>Nuevo Repuesto</span>
+    </button>
+  </header>
+
+  <!-- Buscador -->
+  <div class="control-card">
+    <div class="search-box">
+      <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8"></circle>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+      </svg>
+      <input 
+        type="text" 
+        [(ngModel)]="terminoBusqueda" 
+        (input)="filtrar()" 
+        placeholder="Buscar por código, repuesto o descripción..." 
+      />
+    </div>
+  </div>
+
+  <!-- Tabla de Repuestos -->
+  <div class="table-wrapper">
+    <div *ngIf="cargando" class="state-container">
+      <div class="spinner"></div>
+      <p>Cargando inventario...</p>
+    </div>
+
+    <table class="premium-table" *ngIf="!cargando">
+      <thead>
+        <tr>
+          <th>Código</th>
+          <th>Nombre / Descripción</th>
+          <th>Categoría</th>
+          <th>Stock</th>
+          <th>Precio Unitario</th>
+          <th style="width: 100px; text-align: right;">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of repuestosFiltrados" class="table-row">
+          <td>
+            <span class="code-badge">{{ item.codigo }}</span>
+          </td>
+          <td>
+            <div class="item-info">
+              <span class="item-name">{{ item.nombre }}</span>
+              <small class="item-desc">{{ item.descripcion || 'Sin descripción' }}</small>
+            </div>
+          </td>
+          <td>
+            <span class="cat-pill">{{ obtenerNombreCategoria(item.id_categoria) }}</span>
+          </td>
+          <td>
+            <div class="stock-container">
+              <span class="stock-val" [class.stock-warning]="item.stock_actual <= item.stock_minimo">
+                {{ item.stock_actual }} un.
+              </span>
+              <small class="stock-min">Mín: {{ item.stock_minimo }}</small>
+            </div>
+          </td>
+          <td>
+            <span class="price-tag">Q {{ item.precio_unitario | number:'1.2-2' }}</span>
+          </td>
+          <td style="text-align: right;">
+            <button class="btn-icon-edit" (click)="abrirModalEditar(item)" title="Editar repuesto">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+              </svg>
+            </button>
+          </td>
+        </tr>
+
+        <tr *ngIf="repuestosFiltrados.length === 0 && !cargando">
+          <td colspan="6">
+            <div class="empty-state">
+              <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+              </svg>
+              <p>No se encontraron repuestos registrados.</p>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Modal Crear / Editar -->
+  <div class="modal-backdrop" *ngIf="mostrarModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div>
+          <h3>{{ modoEdicion ? 'Editar Repuesto' : 'Nuevo Repuesto' }}</h3>
+          <p class="modal-subtitle">Proporcioná los datos de la pieza y su inventario</p>
+        </div>
+        <button class="btn-close" (click)="cerrarModal()">&times;</button>
+      </div>
+
+      <form [formGroup]="repuestoForm" (ngSubmit)="guardar()">
+        <div class="modal-body">
+          
+          <div class="form-row">
+            <div class="form-group flex-1">
+              <label for="codigo">Código de Pieza <span>*</span></label>
+              <input id="codigo" type="text" formControlName="codigo" placeholder="Ej. REP-001" />
+              <span class="error-hint" *ngIf="repuestoForm.get('codigo')?.touched && repuestoForm.get('codigo')?.invalid">Requerido</span>
+            </div>
+
+            <div class="form-group flex-2">
+              <label for="nombre">Nombre <span>*</span></label>
+              <input id="nombre" type="text" formControlName="nombre" placeholder="Ej. Pastillas de Freno" />
+              <span class="error-hint" *ngIf="repuestoForm.get('nombre')?.touched && repuestoForm.get('nombre')?.invalid">Requerido</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="id_categoria">Categoría</label>
+            <select id="id_categoria" formControlName="id_categoria">
+              <option [ngValue]="null">-- Seleccionar Categoría --</option>
+              <option *ngFor="let cat of categorias" [value]="cat.id_categoria">
+                {{ cat.nombre }}
+              </option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="descripcion">Descripción</label>
+            <textarea id="descripcion" formControlName="descripcion" rows="2" placeholder="Detalles de la pieza..."></textarea>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="stock_actual">Stock Actual <span>*</span></label>
+              <input id="stock_actual" type="number" formControlName="stock_actual" min="0" />
+            </div>
+
+            <div class="form-group">
+              <label for="stock_minimo">Stock Mínimo <span>*</span></label>
+              <input id="stock_minimo" type="number" formControlName="stock_minimo" min="0" />
+            </div>
+
+            <div class="form-group">
+              <label for="precio_unitario">Precio Unitario (Q) <span>*</span></label>
+              <input id="precio_unitario" type="number" step="0.01" formControlName="precio_unitario" min="0" />
+            </div>
+          </div>
+
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn-secondary" (click)="cerrarModal()">Cancelar</button>
+          <button type="submit" class="btn-primary" [disabled]="repuestoForm.invalid">
+            {{ modoEdicion ? 'Actualizar Repuesto' : 'Guardar Repuesto' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

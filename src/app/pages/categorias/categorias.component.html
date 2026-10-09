@@ -1,0 +1,130 @@
+<div class="modulo-container">
+  <!-- Header de la sección -->
+  <header class="modulo-header">
+    <div class="header-info">
+      <div class="title-with-badge">
+        <h2 class="title">Categorías de Repuestos</h2>
+        <span class="count-badge">{{ categoriasFiltradas.length }} Registros</span>
+      </div>
+      <p class="subtitle">Gestión centralizada de clasificaciones e inventario del taller</p>
+    </div>
+    
+    <button class="btn-primary" (click)="abrirModalCrear()">
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="12" y1="5" x2="12" y2="19"></line>
+        <line x1="5" y1="12" x2="19" y2="12"></line>
+      </svg>
+      <span>Nueva Categoría</span>
+    </button>
+  </header>
+
+  <!-- Control Bar: Buscador y Acciones -->
+  <div class="control-card">
+    <div class="search-box">
+      <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8"></circle>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+      </svg>
+      <input 
+        type="text" 
+        [(ngModel)]="terminoBusqueda" 
+        (input)="filtrar()" 
+        placeholder="Buscar por código o nombre..." 
+      />
+    </div>
+  </div>
+
+  <!-- Contenedor Principal / Tabla -->
+  <div class="table-wrapper">
+    <!-- Overlay de Carga -->
+    <div *ngIf="cargando" class="state-container">
+      <div class="spinner"></div>
+      <p>Cargando información...</p>
+    </div>
+
+    <!-- Tabla -->
+    <table class="premium-table" *ngIf="!cargando">
+      <thead>
+        <tr>
+          <th style="width: 120px;">Código</th>
+          <th>Nombre de Categoría</th>
+          <th style="width: 120px; text-align: right;">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let cat of categoriasFiltradas" class="table-row">
+          <td>
+            <span class="id-badge">#{{ cat.id_categoria }}</span>
+          </td>
+          <td>
+            <span class="cat-name">{{ cat.nombre }}</span>
+          </td>
+          <td style="text-align: right;">
+            <button class="btn-icon-edit" (click)="abrirModalEditar(cat)" title="Editar categoría">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+              </svg>
+            </button>
+          </td>
+        </tr>
+
+        <tr *ngIf="categoriasFiltradas.length === 0 && !cargando">
+          <td colspan="3">
+            <div class="empty-state">
+              <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+              </svg>
+              <p>No se encontraron categorías</p>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Modal Modal Elegante -->
+  <div class="modal-backdrop" *ngIf="mostrarModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div>
+          <h3>{{ modoEdicion ? 'Editar Categoría' : 'Nueva Categoría' }}</h3>
+          <p class="modal-subtitle">{{ modoEdicion ? 'Modifica los parámetros de la categoría' : 'Ingresa los datos requeridos' }}</p>
+        </div>
+        <button class="btn-close" (click)="cerrarModal()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <form [formGroup]="categoriaForm" (ngSubmit)="guardar()">
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="nombre">Nombre de la Categoría <span>*</span></label>
+            <div class="input-wrapper">
+              <input 
+                id="nombre"
+                type="text" 
+                formControlName="nombre" 
+                placeholder="Ej. Sistema de Frenos" 
+                autocomplete="off"
+              />
+            </div>
+            <span class="error-hint" *ngIf="categoriaForm.get('nombre')?.touched && categoriaForm.get('nombre')?.invalid">
+              Se requiere al menos 3 caracteres.
+            </span>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn-secondary" (click)="cerrarModal()">Cancelar</button>
+          <button type="submit" class="btn-primary" [disabled]="categoriaForm.invalid">
+            {{ modoEdicion ? 'Actualizar' : 'Guardar' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
