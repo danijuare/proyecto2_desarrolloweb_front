@@ -1,1 +1,193 @@
-<p>ordenes-trabajo works!</p>
+<div class="modulo-container">
+    <!-- Header de la sección -->
+    <header class="modulo-header">
+        <div class="header-info">
+            <div class="title-with-badge">
+                <h2 class="title">Órdenes de Trabajo</h2>
+                <span class="count-badge">{{ ordenesFiltradas.length }} Órdenes</span>
+            </div>
+            <p class="subtitle">Administración de ingresos al taller, asignación de mecánicos y seguimiento</p>
+        </div>
+
+        <button class="btn-primary" (click)="abrirModalCrear()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            <span>Nueva Orden</span>
+        </button>
+    </header>
+
+    <!-- Buscador -->
+    <div class="control-card">
+        <div class="search-box">
+            <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input type="text" [(ngModel)]="terminoBusqueda" (input)="filtrar()"
+                placeholder="Buscar por placa, vehículo, mecánico, estado u observaciones..." />
+        </div>
+    </div>
+
+    <!-- Tabla de Órdenes -->
+    <div class="table-wrapper">
+        <div *ngIf="cargando" class="state-container">
+            <div class="spinner"></div>
+            <p>Cargando órdenes de trabajo...</p>
+        </div>
+
+        <table class="premium-table" *ngIf="!cargando">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Vehículo / Placa</th>
+                    <th>Mecánico</th>
+                    <th>Estado</th>
+                    <th>Kilometraje</th>
+                    <th>Fechas</th>
+                    <th style="width: 100px; text-align: right;">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let item of ordenesFiltradas" class="table-row">
+                    <td>
+                        <span class="id-badge">#{{ item.id_orden }}</span>
+                    </td>
+                    <td>
+                        <div class="vehicle-cell">
+                            <span class="placa-badge">{{ item.placa_vehiculo }}</span>
+                            <small class="vehicle-sub">{{ item.vehiculo_info }}</small>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="mecanico-text">{{ item.nombre_mecanico || 'Sin asignar' }}</span>
+                    </td>
+                    <td>
+                        <span class="status-pill">{{ item.nombre_estado }}</span>
+                    </td>
+                    <td>
+                        <span class="km-text">{{ item.kilometraje_ingreso ? (item.kilometraje_ingreso | number) + ' km'
+                            : 'N/A' }}</span>
+                    </td>
+                    <td>
+                        <div class="date-box">
+                            <small><b>Ingreso:</b> {{ item.fecha_ingreso | date:'short' }}</small>
+                            <small *ngIf="item.fecha_salida"><b>Salida:</b> {{ item.fecha_salida | date:'short'
+                                }}</small>
+                        </div>
+                    </td>
+                    <td style="text-align: right;">
+                        <button class="btn-icon-edit" (click)="abrirModalEditar(item)" title="Editar orden">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                            </svg>
+                        </button>
+                    </td>
+                </tr>
+
+                <tr *ngIf="ordenesFiltradas.length === 0 && !cargando">
+                    <td colspan="7">
+                        <div class="empty-state">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="1.5">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                                <line x1="16" y1="13" x2="8" y2="13"></line>
+                                <line x1="16" y1="17" x2="8" y2="17"></line>
+                                <polyline points="10 9 9 9 8 9"></polyline>
+                            </svg>
+                            <p>No se encontraron órdenes de trabajo registradas.</p>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Modal Crear / Editar -->
+    <div class="modal-backdrop" *ngIf="mostrarModal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <div>
+                    <h3>{{ modoEdicion ? 'Editar Orden de Trabajo' : 'Nueva Orden de Trabajo' }}</h3>
+                    <p class="modal-subtitle">Configurá el vehículo, mecánico asignado y estado operativo</p>
+                </div>
+                <button class="btn-close" (click)="cerrarModal()">&times;</button>
+            </div>
+
+            <form [formGroup]="ordenForm" (ngSubmit)="guardar()">
+                <div class="modal-body">
+
+                    <div class="form-group">
+                        <label for="id_vehiculo">Vehículo / Placa <span>*</span></label>
+                        <select id="id_vehiculo" formControlName="id_vehiculo">
+                            <option [ngValue]="null">-- Seleccionar Vehículo --</option>
+                            <option *ngFor="let v of vehiculos" [value]="v.id_vehiculo">
+                                [{{ v.placa }}] {{ v.marca }} {{ v.modelo }}
+                            </option>
+                        </select>
+                        <span class="error-hint"
+                            *ngIf="ordenForm.get('id_vehiculo')?.touched && ordenForm.get('id_vehiculo')?.invalid">Requerido</span>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group flex-1">
+                            <label for="id_mecanico">Mecánico Asignado</label>
+                            <select id="id_mecanico" formControlName="id_mecanico">
+                                <option [ngValue]="null">-- Sin asignar / Opcional --</option>
+                                <!-- Usamos m.id_mecanico y m.nombre_completo según lo que devuelve la consola -->
+                                <option *ngFor="let m of mecanicos" [value]="m.id_mecanico">
+                                    {{ m.nombre_completo || ('Mecánico #' + m.id_mecanico) }}
+                                </option>
+                            </select>
+                        </div>
+
+                        <div class="form-group flex-1">
+                            <label for="id_estado">Estado de la Orden <span>*</span></label>
+                            <select id="id_estado" formControlName="id_estado">
+                                <option [ngValue]="null">-- Seleccionar Estado --</option>
+                                <option *ngFor="let e of estados" [value]="e.id_estado">
+                                    {{ e.nombre }}
+                                </option>
+                            </select>
+                            <span class="error-hint"
+                                *ngIf="ordenForm.get('id_estado')?.touched && ordenForm.get('id_estado')?.invalid">Requerido</span>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group flex-1">
+                            <label for="kilometraje_ingreso">Kilometraje de Ingreso</label>
+                            <input id="kilometraje_ingreso" type="number" formControlName="kilometraje_ingreso"
+                                placeholder="Ej. 45000" />
+                        </div>
+
+                        <div class="form-group flex-1">
+                            <label for="fecha_salida">Fecha de Salida</label>
+                            <input id="fecha_salida" type="datetime-local" formControlName="fecha_salida" />
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="observaciones">Observaciones</label>
+                        <textarea id="observaciones" formControlName="observaciones" rows="3"
+                            placeholder="Detalles o notas del ingreso..."></textarea>
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" (click)="cerrarModal()">Cancelar</button>
+                    <button type="submit" class="btn-primary" [disabled]="ordenForm.invalid">
+                        {{ modoEdicion ? 'Actualizar Orden' : 'Guardar Orden' }}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

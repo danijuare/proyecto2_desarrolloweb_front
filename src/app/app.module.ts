@@ -16,6 +16,7 @@ import { ReparacionesComponent } from './pages/reparaciones/reparaciones.compone
 import { DependenciasComponent } from './pages/dependencias/dependencias.component';
 import { CategoriasComponent } from './pages/categorias/categorias.component';
 import { RepuestosComponent } from './pages/repuestos/repuestos.component';
+import { EstadosAccionComponent } from './pages/estados-accion/estados-accion.component';
 
 @NgModule({
   declarations: [
