@@ -1,1 +1,89 @@
-<p>roles works!</p>
+<section class="admin-page">
+  <header class="page-header">
+    <div>
+      <p class="eyebrow">Administración</p>
+      <h1>Roles y permisos</h1>
+      <p>Define los perfiles de acceso y los permisos asociados.</p>
+    </div>
+    <button class="primary-button" type="button" (click)="abrirCrear()">Nuevo rol</button>
+  </header>
+
+  <div class="roles-layout">
+    <section class="panel roles-panel">
+      <h2>Roles registrados</h2>
+      <p *ngIf="cargandoRoles" class="empty-state">Cargando roles...</p>
+      <p *ngIf="!cargandoRoles && roles.length === 0" class="empty-state">No hay roles registrados.</p>
+      <div class="role-list" *ngIf="!cargandoRoles && roles.length > 0">
+        <article class="role-item" *ngFor="let rol of roles"
+          [class.selected]="rolSeleccionado?.id_rol === rol.id_rol"
+          (click)="seleccionarRol(rol)">
+          <div class="role-summary">
+            <strong>{{ rol.nombre }}</strong>
+            <span>{{ rol.descripcion || 'Sin descripción' }}</span>
+          </div>
+          <div class="role-actions">
+            <button type="button" aria-label="Editar rol" (click)="abrirEditar(rol, $event)">Editar</button>
+            <button type="button" class="danger-text" aria-label="Eliminar rol" (click)="eliminarRol(rol, $event)">Eliminar</button>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="panel permissions-panel">
+      <ng-container *ngIf="rolSeleccionado; else selectRole">
+        <div class="panel-heading">
+          <div>
+            <h2>Permisos de {{ rolSeleccionado.nombre }}</h2>
+            <p>Selecciona los permisos que tendrá este rol.</p>
+          </div>
+          <button class="primary-button" type="button" [disabled]="guardandoPermisos || cargandoPermisos"
+            (click)="guardarPermisos()">
+            {{ guardandoPermisos ? 'Guardando...' : 'Guardar permisos' }}
+          </button>
+        </div>
+        <p *ngIf="cargandoPermisos" class="empty-state">Cargando permisos...</p>
+        <p *ngIf="!cargandoPermisos && permisos.length === 0" class="empty-state">
+          No hay permisos activos. Puedes agregarlos desde la sección Permisos.
+        </p>
+        <label class="permission-option" *ngFor="let permiso of permisos">
+          <input type="checkbox" [checked]="tienePermiso(permiso.id_permiso)"
+            (change)="cambiarPermiso(permiso.id_permiso, $event)">
+          <span>
+            <strong>{{ permiso.nombre }}</strong>
+            <small>{{ permiso.codigo }}<span *ngIf="permiso.descripcion"> · {{ permiso.descripcion }}</span></small>
+          </span>
+        </label>
+      </ng-container>
+      <ng-template #selectRole>
+        <div class="empty-state select-role">
+          <h2>Selecciona un rol</h2>
+          <p>Elige un rol de la lista para consultar o actualizar sus permisos.</p>
+        </div>
+      </ng-template>
+    </section>
+  </div>
+
+  <div class="modal-backdrop" *ngIf="mostrarFormulario" (click)="cerrarFormulario()">
+    <section class="form-modal" role="dialog" aria-modal="true" aria-labelledby="role-form-title"
+      (click)="$event.stopPropagation()">
+      <h2 id="role-form-title">{{ idEdicion === null ? 'Crear rol' : 'Editar rol' }}</h2>
+      <form [formGroup]="rolForm" (ngSubmit)="guardarRol()">
+        <label>
+          Nombre
+          <input formControlName="nombre" maxlength="50" autocomplete="off">
+        </label>
+        <small class="validation-message" *ngIf="rolForm.controls['nombre'].touched && rolForm.controls['nombre'].invalid">
+          El nombre es obligatorio (máximo 50 caracteres).
+        </small>
+        <label>
+          Descripción
+          <textarea formControlName="descripcion" maxlength="255" rows="3"></textarea>
+        </label>
+        <div class="modal-actions">
+          <button class="secondary-button" type="button" (click)="cerrarFormulario()">Cancelar</button>
+          <button class="primary-button" type="submit">Guardar</button>
+        </div>
+      </form>
+    </section>
+  </div>
+</section>

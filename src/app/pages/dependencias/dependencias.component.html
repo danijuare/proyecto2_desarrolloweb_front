@@ -1,1 +1,69 @@
-<p>dependencias works!</p>
+<section class="admin-page">
+  <header class="page-header">
+    <div>
+      <p class="eyebrow">Administración del taller</p>
+      <h1>Dependencias de reparación</h1>
+      <p>Define qué acciones deben completarse antes de iniciar otras.</p>
+    </div>
+    <button class="primary-button" type="button" [disabled]="acciones.length < 2" (click)="abrirFormulario()">
+      Nueva dependencia
+    </button>
+  </header>
+
+  <section class="panel">
+    <p *ngIf="cargando" class="empty-state">Cargando dependencias...</p>
+    <p *ngIf="!cargando && dependencias.length === 0" class="empty-state">
+      No hay dependencias registradas.
+    </p>
+    <div class="table-scroll" *ngIf="!cargando && dependencias.length > 0">
+      <table>
+        <thead>
+          <tr><th>Acción</th><th>Debe completar primero</th><th>Acción</th></tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let dependencia of dependencias">
+            <td>{{ dependencia.descripcion_accion }}</td>
+            <td>{{ dependencia.descripcion_prerequisito }}</td>
+            <td>
+              <button type="button" class="danger-text" (click)="eliminar(dependencia)">Eliminar</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <div class="modal-backdrop" *ngIf="mostrarFormulario" (click)="cerrarFormulario()">
+    <section class="form-modal" role="dialog" aria-modal="true" aria-labelledby="dependency-form-title"
+      (click)="$event.stopPropagation()">
+      <h2 id="dependency-form-title">Nueva dependencia</h2>
+      <form [formGroup]="dependenciaForm" (ngSubmit)="guardar()">
+        <label>
+          Acción que tiene el requisito
+          <select formControlName="id_accion">
+            <option [ngValue]="null" disabled>Selecciona una acción</option>
+            <option *ngFor="let accion of acciones" [ngValue]="accion.id_accion">
+              {{ accion.descripcion }}
+            </option>
+          </select>
+        </label>
+        <label>
+          Acción que debe completarse primero
+          <select formControlName="id_accion_prerequisito">
+            <option [ngValue]="null" disabled>Selecciona el prerrequisito</option>
+            <option *ngFor="let accion of accionesPrerequisito" [ngValue]="accion.id_accion">
+              {{ accion.descripcion }}
+            </option>
+          </select>
+        </label>
+        <p class="form-note">Una acción no puede ser prerrequisito de sí misma.</p>
+        <div class="modal-actions">
+          <button class="secondary-button" type="button" (click)="cerrarFormulario()">Cancelar</button>
+          <button class="primary-button" type="submit" [disabled]="guardando">
+            {{ guardando ? 'Guardando...' : 'Guardar dependencia' }}
+          </button>
+        </div>
+      </form>
+    </section>
+  </div>
+</section>

@@ -1,0 +1,116 @@
+<section class="inventory-page">
+  <header class="page-header">
+    <div>
+      <p class="eyebrow">Inventario</p>
+      <h1>Movimientos y consumo de repuestos</h1>
+      <p>Registra entradas/salidas y los repuestos usados en acciones de reparación.</p>
+    </div>
+  </header>
+
+  <div class="forms-grid">
+    <section class="panel" *ngIf="puedeRegistrarMovimiento()">
+      <h2>Registrar movimiento</h2>
+      <form [formGroup]="movimientoForm" (ngSubmit)="registrarMovimiento()">
+        <label>
+          Repuesto
+          <select formControlName="id_repuesto">
+            <option [ngValue]="null" disabled>Selecciona un repuesto</option>
+            <option *ngFor="let repuesto of repuestos" [ngValue]="repuesto.id_repuesto">
+              {{ repuesto.codigo }} · {{ repuesto.nombre }} (stock {{ repuesto.stock_actual }})
+            </option>
+          </select>
+        </label>
+        <div class="form-row">
+          <label>
+            Tipo
+            <select formControlName="tipo">
+              <option value="entrada">Entrada</option>
+              <option value="salida">Salida</option>
+            </select>
+          </label>
+          <label>Cantidad<input formControlName="cantidad" type="number" min="1" step="1"></label>
+        </div>
+        <label>Motivo<input formControlName="motivo" maxlength="255" placeholder="Compra, ajuste, devolución..."></label>
+        <button class="primary-button" type="submit" [disabled]="guardandoMovimiento || repuestos.length === 0">
+          {{ guardandoMovimiento ? 'Registrando...' : 'Registrar movimiento' }}
+        </button>
+      </form>
+    </section>
+
+    <section class="panel" *ngIf="puedeRegistrarUso()">
+      <h2>Registrar repuesto usado</h2>
+      <form [formGroup]="usoForm" (ngSubmit)="registrarUso()">
+        <label>
+          Acción de reparación
+          <select formControlName="id_accion">
+            <option [ngValue]="null" disabled>Selecciona una acción</option>
+            <option *ngFor="let accion of acciones" [ngValue]="accion.id_accion">
+              {{ accion.descripcion }}
+            </option>
+          </select>
+        </label>
+        <label>
+          Repuesto
+          <select formControlName="id_repuesto">
+            <option [ngValue]="null" disabled>Selecciona un repuesto</option>
+            <option *ngFor="let repuesto of repuestos" [ngValue]="repuesto.id_repuesto">
+              {{ repuesto.codigo }} · {{ repuesto.nombre }} (stock {{ repuesto.stock_actual }})
+            </option>
+          </select>
+        </label>
+        <div class="form-row">
+          <label>Cantidad<input formControlName="cantidad" type="number" min="1" step="1"></label>
+          <label>Precio unitario<input formControlName="precio_unitario" type="number" min="0" step="0.01"></label>
+        </div>
+        <label>Justificación<input formControlName="justificacion" maxlength="255"></label>
+        <button class="primary-button" type="submit" [disabled]="guardandoUso || repuestos.length === 0 || acciones.length === 0">
+          {{ guardandoUso ? 'Registrando...' : 'Registrar consumo' }}
+        </button>
+      </form>
+    </section>
+  </div>
+
+  <section class="panel history-panel">
+    <h2>Historial de movimientos</h2>
+    <p *ngIf="cargandoMovimientos" class="empty-state">Cargando movimientos...</p>
+    <p *ngIf="!cargandoMovimientos && movimientos.length === 0" class="empty-state">No hay movimientos registrados.</p>
+    <div class="table-scroll" *ngIf="!cargandoMovimientos && movimientos.length > 0">
+      <table>
+        <thead><tr><th>Fecha</th><th>Repuesto</th><th>Tipo</th><th>Cantidad</th><th>Motivo</th><th>Usuario</th></tr></thead>
+        <tbody>
+          <tr *ngFor="let movimiento of movimientos">
+            <td>{{ movimiento.fecha | date:'short' }}</td>
+            <td>{{ movimiento.codigo_repuesto }} · {{ movimiento.nombre_repuesto }}</td>
+            <td><span class="movement-type" [class.out]="movimiento.tipo === 'salida'">{{ movimiento.tipo }}</span></td>
+            <td>{{ movimiento.cantidad }}</td>
+            <td>{{ movimiento.motivo || '—' }}</td>
+            <td>{{ movimiento.nombre_usuario || '—' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="panel history-panel" *ngIf="puedeRegistrarUso() || esAdministrador()">
+    <h2>Repuestos usados en reparaciones</h2>
+    <p *ngIf="cargandoUsos" class="empty-state">Cargando consumos...</p>
+    <p *ngIf="!cargandoUsos && usos.length === 0" class="empty-state">No hay consumos registrados.</p>
+    <div class="table-scroll" *ngIf="!cargandoUsos && usos.length > 0">
+      <table>
+        <thead><tr><th>Fecha</th><th>Acción</th><th>Repuesto</th><th>Cantidad</th><th>Subtotal</th><th>Justificación</th><th>Autoriza</th><th></th></tr></thead>
+        <tbody>
+          <tr *ngFor="let uso of usos">
+            <td>{{ uso.fecha | date:'short' }}</td>
+            <td>#{{ uso.id_accion }}</td>
+            <td>{{ uso.codigo_repuesto }} · {{ uso.nombre_repuesto }}</td>
+            <td>{{ uso.cantidad }}</td>
+            <td>{{ uso.subtotal | currency:'GTQ':'symbol':'1.2-2' }}</td>
+            <td>{{ uso.justificacion }}</td>
+            <td>{{ uso.nombre_usuario_autoriza || '—' }}</td>
+            <td><button class="danger-text" *ngIf="puedeRegistrarUso()" type="button" (click)="eliminarUso(uso)">Revertir</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</section>

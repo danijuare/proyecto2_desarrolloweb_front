@@ -3,15 +3,16 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { OrdenTrabajo, VehiculoSelect, EstadoOrdenSelect } from '../models/orden-trabajo.model';
 import { Mecanico } from '../models/mecanico.model';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class OrdenTrabajoService {
-  private apiUrl = 'https://localhost:7073/api/OrdenesTrabajo';
-  private apiVehiculos = 'https://localhost:7073/api/Vehiculos';
-  private apiMecanicos = 'https://localhost:7073/api/Mecanicos';
-  private apiEstadosOrden = 'https://localhost:7073/api/EstadosOrden';
+  private apiUrl = `${environment.apiBaseUrl}/OrdenesTrabajo`;
+  private apiVehiculos = `${environment.apiBaseUrl}/Vehiculos`;
+  private apiMecanicos = `${environment.apiBaseUrl}/Mecanicos`;
+  private apiEstadosOrden = `${environment.apiBaseUrl}/EstadosOrden`;
 
   constructor(private http: HttpClient) { }
 

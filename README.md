@@ -1,27 +1,40 @@
-# TallerFrontend
+# Frontend del sistema de taller mecánico
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 14.2.13.
+Aplicación Angular 14 para consumir la API REST del Proyecto II. Incluye inicio de
+sesión, navegación según rol, órdenes de trabajo, diagnósticos, reparaciones,
+vehículos, clientes, facturación con detalle, movimientos y consumo de repuestos,
+administración de usuarios, catálogos, roles y permisos.
 
-## Development server
+## Requisitos
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+- Node.js y npm
+- .NET SDK requerido por el backend
+- MySQL/MariaDB con la base `proyecto_2_desarrollo_web`
 
-## Code scaffolding
+## Iniciar el proyecto
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+1. Configura la conexión a MySQL y la clave JWT en el backend. No publiques esos
+   valores en el repositorio.
+2. Inicia el backend desde su carpeta con `dotnet run --launch-profile https`.
+   El perfil local escucha en `https://localhost:7073`; acepta CORS desde
+   `http://localhost:4200`.
+3. En esta carpeta instala dependencias con `npm ci`.
+4. Ejecuta `npm start` y abre `http://localhost:4200/`.
 
-## Build
+La URL base de la API está en `src/environments/environment.ts`. Para otro
+servidor, actualiza `apiBaseUrl` en los archivos de entorno antes de compilar.
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+> El archivo `db.txt` del backend elimina y vuelve a crear tablas. No lo ejecutes
+> sobre una base existente sin respaldo.
 
-## Running unit tests
+## Verificación
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+- `npm test -- --watch=false --browsers=ChromeHeadless`
+- `npm run build`
 
-## Running end-to-end tests
-
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+La interfaz requiere que la API y la base de datos estén disponibles para
+autenticarse y cargar datos. Los roles y permisos se administran desde las
+secciones de administración; los permisos pueden asignarse a roles y activarse o
+desactivarse.
+Los usuarios se crean y administran desde la sección correspondiente; facturas e
+inventario requieren los permisos de rol descritos en el menú de navegación.

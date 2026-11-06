@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../../environments/environment';
 import { AccionReparacion } from '../models/accion-reparacion.model';
 import { DiagnosticoSelect, EstadoAccion, UsuarioSelect } from '../models/catalogos.model';
 
@@ -8,10 +9,10 @@ import { DiagnosticoSelect, EstadoAccion, UsuarioSelect } from '../models/catalo
   providedIn: 'root'
 })
 export class AccionReparacionService {
-  private apiUrl = 'https://localhost:7073/api/AccionesReparacion';
-  private apiDiagnosticos = 'https://localhost:7073/api/Diagnosticos';
-  private apiEstados = 'https://localhost:7073/api/EstadosAccion';
-  private apiUsuarios = 'https://localhost:7073/api/Usuarios';
+  private apiUrl = `${environment.apiBaseUrl}/AccionesReparacion`;
+  private apiDiagnosticos = `${environment.apiBaseUrl}/Diagnosticos`;
+  private apiEstados = `${environment.apiBaseUrl}/EstadosAccion`;
+  private apiUsuarios = `${environment.apiBaseUrl}/Usuarios`;
 
   constructor(private http: HttpClient) { }
 

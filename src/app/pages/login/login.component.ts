@@ -42,7 +42,6 @@ export class LoginComponent implements OnInit {
 
     this.authService.login(this.loginForm.value).subscribe({
       next: () => {
-        console.log("this.loginForm.value", this.loginForm.value);
         this.cargando = false;
         // Redirigimos al dashboard tras un login exitoso
         this.router.navigate(['/dashboard']);

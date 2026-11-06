@@ -1,1 +1,85 @@
-<p>permisos works!</p>
+<section class="admin-page">
+  <header class="page-header">
+    <div>
+      <p class="eyebrow">Administración</p>
+      <h1>Permisos</h1>
+      <p>Administra las acciones disponibles para asignar a los roles.</p>
+    </div>
+    <button class="primary-button" type="button" (click)="abrirCrear()">Nuevo permiso</button>
+  </header>
+
+  <section class="panel">
+    <div class="table-toolbar">
+      <p>{{ permisosVisibles.length }} permiso(s)</p>
+      <label class="show-inactive">
+        <input type="checkbox" [checked]="mostrarInactivos" (change)="cambiarVisibilidad($event)">
+        Mostrar desactivados
+      </label>
+    </div>
+
+    <p *ngIf="cargando" class="empty-state">Cargando permisos...</p>
+    <p *ngIf="!cargando && permisosVisibles.length === 0" class="empty-state">No hay permisos para mostrar.</p>
+    <div class="table-scroll" *ngIf="!cargando && permisosVisibles.length > 0">
+      <table>
+        <thead>
+          <tr><th>Código</th><th>Nombre</th><th>Descripción</th><th>Estado</th><th>Acciones</th></tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let permiso of permisosVisibles">
+            <td><code>{{ permiso.codigo }}</code></td>
+            <td>{{ permiso.nombre }}</td>
+            <td>{{ permiso.descripcion || '—' }}</td>
+            <td><span class="status" [class.inactive]="permiso.condicion === 0">
+              {{ permiso.condicion === 0 ? 'Inactivo' : 'Activo' }}
+            </span></td>
+            <td class="actions">
+              <button type="button" (click)="abrirEditar(permiso)">Editar</button>
+              <button type="button" class="danger-text" *ngIf="permiso.condicion !== 0"
+                (click)="desactivarPermiso(permiso)">Desactivar</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <div class="modal-backdrop" *ngIf="mostrarFormulario" (click)="cerrarFormulario()">
+    <section class="form-modal" role="dialog" aria-modal="true" aria-labelledby="permission-form-title"
+      (click)="$event.stopPropagation()">
+      <h2 id="permission-form-title">{{ idEdicion === null ? 'Crear permiso' : 'Editar permiso' }}</h2>
+      <form [formGroup]="permisoForm" (ngSubmit)="guardarPermiso()">
+        <label>
+          Código
+          <input formControlName="codigo" maxlength="60" autocomplete="off">
+        </label>
+        <small class="validation-message" *ngIf="permisoForm.controls['codigo'].touched && permisoForm.controls['codigo'].invalid">
+          El código es obligatorio (máximo 60 caracteres).
+        </small>
+        <label>
+          Nombre
+          <input formControlName="nombre" maxlength="100">
+        </label>
+        <small class="validation-message" *ngIf="permisoForm.controls['nombre'].touched && permisoForm.controls['nombre'].invalid">
+          El nombre es obligatorio (máximo 100 caracteres).
+        </small>
+        <label>
+          Descripción
+          <textarea formControlName="descripcion" maxlength="255" rows="3"></textarea>
+        </label>
+        <label *ngIf="idEdicion !== null">
+          Estado
+          <select formControlName="condicion">
+            <option [ngValue]="1">Activo</option>
+            <option [ngValue]="0">Inactivo</option>
+          </select>
+        </label>
+        <div class="modal-actions">
+          <button class="secondary-button" type="button" (click)="cerrarFormulario()">Cancelar</button>
+          <button class="primary-button" type="submit" [disabled]="guardando">
+            {{ guardando ? 'Guardando...' : 'Guardar' }}
+          </button>
+        </div>
+      </form>
+    </section>
+  </div>
+</section>

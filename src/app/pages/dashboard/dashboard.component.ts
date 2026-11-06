@@ -17,7 +17,7 @@ export class DashboardComponent implements OnInit {
 
   constructor(
     private authService: AuthService,
-    private router: Router
+    public readonly router: Router
   ) { }
 
   ngOnInit(): void {
@@ -28,11 +28,6 @@ export class DashboardComponent implements OnInit {
   esRol(rolRequerido: string): boolean {
     const rolGuardado = localStorage.getItem('rol');
     return rolGuardado === rolRequerido;
-  }
-
-  tienePermiso(rolRequerido: string): boolean {
-    const rol = localStorage.getItem('rol');
-    return rol === rolRequerido;
   }
 
   cerrarSesion(): void {

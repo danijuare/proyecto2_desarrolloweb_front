@@ -1,0 +1,110 @@
+<section class="admin-page">
+  <header class="page-header">
+    <div>
+      <p class="eyebrow">Administración</p>
+      <h1>Usuarios</h1>
+      <p>Administra cuentas, roles y permisos directos.</p>
+    </div>
+    <button class="primary-button" type="button" (click)="abrirCrear()">Nuevo usuario</button>
+  </header>
+
+  <div class="users-layout">
+    <section class="panel users-panel">
+      <h2>Cuentas activas</h2>
+      <p *ngIf="cargandoUsuarios" class="empty-state">Cargando usuarios...</p>
+      <p *ngIf="!cargandoUsuarios && usuarios.length === 0" class="empty-state">No hay usuarios activos.</p>
+      <div class="user-list" *ngIf="!cargandoUsuarios && usuarios.length > 0">
+        <article class="user-item" *ngFor="let usuario of usuarios"
+          [class.selected]="usuarioSeleccionado?.id_usuario === usuario.id_usuario"
+          (click)="seleccionarUsuario(usuario)">
+          <div class="user-summary">
+            <strong>{{ usuario.nombre }} {{ usuario.apellido }}</strong>
+            <span>{{ usuario.email }}</span>
+            <small>{{ usuario.nombre_rol }}</small>
+          </div>
+          <div class="user-actions">
+            <button type="button" (click)="abrirEditar(usuario, $event)">Editar</button>
+            <button type="button" class="danger-text" (click)="desactivarUsuario(usuario, $event)">Desactivar</button>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="panel direct-permissions">
+      <ng-container *ngIf="usuarioSeleccionado; else selectUser">
+        <h2>Permisos directos</h2>
+        <p>{{ usuarioSeleccionado.nombre }} {{ usuarioSeleccionado.apellido }} · se aplican además de su rol.</p>
+        <form class="permission-form" [formGroup]="permisoForm" (ngSubmit)="guardarPermisoDirecto()">
+          <label>
+            Permiso
+            <select formControlName="id_permiso">
+              <option [ngValue]="null" disabled>Selecciona un permiso</option>
+              <option *ngFor="let permiso of permisos" [ngValue]="permiso.id_permiso">
+                {{ permiso.nombre }} ({{ permiso.codigo }})
+              </option>
+            </select>
+          </label>
+          <label>
+            Acción
+            <select formControlName="tipo">
+              <option value="conceder">Conceder</option>
+              <option value="denegar">Denegar</option>
+            </select>
+          </label>
+          <button class="primary-button" type="submit" [disabled]="guardandoPermiso">
+            {{ guardandoPermiso ? 'Guardando...' : 'Asignar' }}
+          </button>
+        </form>
+
+        <p *ngIf="permisosDirectos.length === 0" class="empty-state">Este usuario no tiene permisos directos.</p>
+        <div class="direct-permission" *ngFor="let permiso of permisosDirectos">
+          <div>
+            <strong>{{ permiso.nombre }}</strong>
+            <small>{{ permiso.codigo }} · {{ permiso.tipo }}</small>
+          </div>
+          <button class="danger-text" type="button" (click)="quitarPermiso(permiso)">Quitar</button>
+        </div>
+      </ng-container>
+      <ng-template #selectUser>
+        <div class="empty-state select-user">
+          <h2>Selecciona un usuario</h2>
+          <p>Consulta o modifica sus permisos directos.</p>
+        </div>
+      </ng-template>
+    </section>
+  </div>
+
+  <div class="modal-backdrop" *ngIf="mostrarFormulario" (click)="cerrarFormulario()">
+    <section class="form-modal" role="dialog" aria-modal="true" aria-labelledby="user-form-title"
+      (click)="$event.stopPropagation()">
+      <h2 id="user-form-title">{{ idEdicion === null ? 'Crear usuario' : 'Editar usuario' }}</h2>
+      <form [formGroup]="usuarioForm" (ngSubmit)="guardarUsuario()">
+        <label>
+          Rol
+          <select formControlName="id_rol">
+            <option [ngValue]="null" disabled>Selecciona un rol</option>
+            <option *ngFor="let rol of roles" [ngValue]="rol.id_rol">{{ rol.nombre }}</option>
+          </select>
+        </label>
+        <div class="name-fields">
+          <label>Nombre<input formControlName="nombre" maxlength="80"></label>
+          <label>Apellido<input formControlName="apellido" maxlength="80"></label>
+        </div>
+        <label>Correo electrónico<input formControlName="email" type="email" maxlength="120" autocomplete="email"></label>
+        <label>
+          {{ idEdicion === null ? 'Contraseña' : 'Nueva contraseña (opcional)' }}
+          <input formControlName="password" type="password" autocomplete="new-password">
+        </label>
+        <small class="validation-message" *ngIf="usuarioForm.controls['password'].touched && usuarioForm.controls['password'].invalid">
+          La contraseña debe tener al menos 8 caracteres.
+        </small>
+        <div class="modal-actions">
+          <button class="secondary-button" type="button" (click)="cerrarFormulario()">Cancelar</button>
+          <button class="primary-button" type="submit" [disabled]="guardandoUsuario">
+            {{ guardandoUsuario ? 'Guardando...' : 'Guardar' }}
+          </button>
+        </div>
+      </form>
+    </section>
+  </div>
+</section>

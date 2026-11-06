@@ -1,0 +1,146 @@
+<section class="billing-page">
+  <header class="page-header">
+    <div>
+      <p class="eyebrow">Administración del taller</p>
+      <h1>Facturación</h1>
+      <p>Genera facturas por orden de trabajo y administra sus conceptos.</p>
+    </div>
+    <button class="primary-button" type="button" [disabled]="ordenesDisponibles.length === 0" (click)="abrirCrearFactura()">
+      Nueva factura
+    </button>
+  </header>
+
+  <div class="billing-layout">
+    <section class="panel invoice-list">
+      <h2>Facturas</h2>
+      <p *ngIf="cargandoFacturas" class="empty-state">Cargando facturas...</p>
+      <p *ngIf="!cargandoFacturas && facturas.length === 0" class="empty-state">No hay facturas registradas.</p>
+      <article class="invoice-item" *ngFor="let factura of facturas"
+        [class.selected]="facturaSeleccionada?.id_factura === factura.id_factura"
+        (click)="seleccionarFactura(factura)">
+        <div>
+          <strong>Factura #{{ factura.id_factura }}</strong>
+          <span>Orden #{{ factura.id_orden }} · {{ factura.fecha_emision | date:'shortDate' }}</span>
+          <span class="status" [class.paid]="factura.estado_pago === 'pagada'" [class.cancelled]="factura.estado_pago === 'anulada'">
+            {{ factura.estado_pago }}
+          </span>
+        </div>
+        <div class="invoice-actions">
+          <strong>{{ factura.total | currency:'GTQ':'symbol':'1.2-2' }}</strong>
+          <button type="button" aria-label="Editar factura" (click)="abrirEditarFactura(factura, $event)">Editar</button>
+          <button type="button" class="danger-text" aria-label="Eliminar factura" (click)="eliminarFactura(factura, $event)">Eliminar</button>
+        </div>
+      </article>
+    </section>
+
+    <section class="panel detail-panel">
+      <ng-container *ngIf="facturaSeleccionada; else selectInvoice">
+        <div class="detail-heading">
+          <div>
+            <h2>Factura #{{ facturaSeleccionada.id_factura }}</h2>
+            <p>Orden #{{ facturaSeleccionada.id_orden }} · estado {{ facturaSeleccionada.estado_pago }}</p>
+          </div>
+          <button class="primary-button" type="button" (click)="abrirCrearDetalle()">Agregar concepto</button>
+        </div>
+        <p *ngIf="detalles.length === 0" class="empty-state">Esta factura aún no tiene conceptos detallados.</p>
+        <div class="table-scroll" *ngIf="detalles.length > 0">
+          <table>
+            <thead>
+              <tr><th>Tipo</th><th>Descripción</th><th>Cant.</th><th>Precio</th><th>Subtotal</th><th>Acciones</th></tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let detalle of detalles">
+                <td>{{ detalle.tipo === 'mano_obra' ? 'Mano de obra' : 'Repuesto' }}</td>
+                <td>{{ detalle.descripcion }}</td>
+                <td>{{ detalle.cantidad }}</td>
+                <td>{{ detalle.precio_unitario | currency:'GTQ':'symbol':'1.2-2' }}</td>
+                <td>{{ detalle.subtotal | currency:'GTQ':'symbol':'1.2-2' }}</td>
+                <td class="actions">
+                  <button type="button" (click)="abrirEditarDetalle(detalle)">Editar</button>
+                  <button class="danger-text" type="button" (click)="eliminarDetalle(detalle)">Eliminar</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="totals">
+          <span>Mano de obra <strong>{{ facturaSeleccionada.subtotal_mano_obra | currency:'GTQ':'symbol':'1.2-2' }}</strong></span>
+          <span>Repuestos <strong>{{ facturaSeleccionada.subtotal_repuestos | currency:'GTQ':'symbol':'1.2-2' }}</strong></span>
+          <span>Impuestos <strong>{{ facturaSeleccionada.impuestos | currency:'GTQ':'symbol':'1.2-2' }}</strong></span>
+          <span class="grand-total">Total <strong>{{ facturaSeleccionada.total | currency:'GTQ':'symbol':'1.2-2' }}</strong></span>
+        </div>
+      </ng-container>
+      <ng-template #selectInvoice>
+        <div class="empty-state select-invoice">
+          <h2>Selecciona una factura</h2>
+          <p>Elige una factura para consultar sus conceptos y totales.</p>
+        </div>
+      </ng-template>
+    </section>
+  </div>
+
+  <div class="modal-backdrop" *ngIf="mostrarFacturaForm" (click)="cerrarFacturaForm()">
+    <section class="form-modal" role="dialog" aria-modal="true" aria-labelledby="invoice-form-title"
+      (click)="$event.stopPropagation()">
+      <h2 id="invoice-form-title">{{ idFacturaEdicion === null ? 'Crear factura' : 'Editar factura' }}</h2>
+      <form [formGroup]="facturaForm" (ngSubmit)="guardarFactura()">
+        <label>
+          Orden de trabajo
+          <select formControlName="id_orden">
+            <option [ngValue]="null" disabled>Selecciona una orden</option>
+            <option *ngFor="let orden of ordenesDisponibles" [ngValue]="orden.id_orden">
+              Orden #{{ orden.id_orden }} · {{ orden.placa_vehiculo || orden.vehiculo_info }}
+            </option>
+          </select>
+        </label>
+        <div class="number-fields">
+          <label>Subtotal mano de obra<input formControlName="subtotal_mano_obra" type="number" min="0" step="0.01"></label>
+          <label>Subtotal repuestos<input formControlName="subtotal_repuestos" type="number" min="0" step="0.01"></label>
+          <label>Impuestos<input formControlName="impuestos" type="number" min="0" step="0.01"></label>
+        </div>
+        <label>
+          Estado de pago
+          <select formControlName="estado_pago">
+            <option value="pendiente">Pendiente</option>
+            <option value="pagada">Pagada</option>
+            <option value="anulada">Anulada</option>
+          </select>
+        </label>
+        <p class="form-note">El total se calcula en el servidor. Agregar conceptos también actualiza los subtotales.</p>
+        <div class="modal-actions">
+          <button class="secondary-button" type="button" (click)="cerrarFacturaForm()">Cancelar</button>
+          <button class="primary-button" type="submit" [disabled]="guardandoFactura">
+            {{ guardandoFactura ? 'Guardando...' : 'Guardar factura' }}
+          </button>
+        </div>
+      </form>
+    </section>
+  </div>
+
+  <div class="modal-backdrop" *ngIf="mostrarDetalleForm" (click)="cerrarDetalleForm()">
+    <section class="form-modal" role="dialog" aria-modal="true" aria-labelledby="detail-form-title"
+      (click)="$event.stopPropagation()">
+      <h2 id="detail-form-title">{{ idDetalleEdicion === null ? 'Agregar concepto' : 'Editar concepto' }}</h2>
+      <form [formGroup]="detalleForm" (ngSubmit)="guardarDetalle()">
+        <label>
+          Tipo
+          <select formControlName="tipo">
+            <option value="mano_obra">Mano de obra</option>
+            <option value="repuesto">Repuesto</option>
+          </select>
+        </label>
+        <label>Descripción<input formControlName="descripcion" maxlength="255"></label>
+        <div class="number-fields">
+          <label>Cantidad<input formControlName="cantidad" type="number" min="1" step="1"></label>
+          <label>Precio unitario<input formControlName="precio_unitario" type="number" min="0" step="0.01"></label>
+        </div>
+        <div class="modal-actions">
+          <button class="secondary-button" type="button" (click)="cerrarDetalleForm()">Cancelar</button>
+          <button class="primary-button" type="submit" [disabled]="guardandoDetalle">
+            {{ guardandoDetalle ? 'Guardando...' : 'Guardar concepto' }}
+          </button>
+        </div>
+      </form>
+    </section>
+  </div>
+</section>

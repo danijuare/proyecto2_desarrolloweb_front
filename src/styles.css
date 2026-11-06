@@ -1,8 +1,561 @@
-html, body {
+:root {
+  color-scheme: light;
+  --ink-950: #101b2a;
+  --ink-900: #17263a;
+  --ink-800: #24354a;
+  --ink-700: #34485e;
+  --muted: #748092;
+  --muted-light: #98a2ae;
+  --canvas: #f3f1ec;
+  --surface: #ffffff;
+  --surface-soft: #faf9f6;
+  --line: #e7e4dc;
+  --line-strong: #d7d2c7;
+  --bronze-700: #936c3c;
+  --bronze-600: #a77d49;
+  --bronze-100: #f4ecdf;
+  --success: #2e775b;
+  --danger: #b4504b;
+  --shadow-card: 0 12px 32px rgba(27, 38, 51, .055);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  min-width: 320px;
+  min-height: 100%;
   margin: 0;
   padding: 0;
-  width: 100%;
-  height: 100%;
-  background-color: #0b0f19; /* Mismo color de fondo para evitar parpadeos blancos */
   overflow-x: hidden;
+  background: var(--canvas);
+  color: var(--ink-900);
+  font-family: Inter, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  font-size: 14px;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button,
+a,
+input,
+select,
+textarea {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button {
+  transition: background-color .18s ease, border-color .18s ease, color .18s ease, box-shadow .18s ease, transform .18s ease;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid rgba(167, 125, 73, .3);
+  outline-offset: 2px;
+}
+
+::selection {
+  color: #fff;
+  background: var(--bronze-600);
+}
+
+/* Shared treatment for the existing business modules. */
+app-root .content-body .modulo-container {
+  gap: 1.35rem;
+  color: var(--ink-900);
+  font-family: Inter, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+}
+
+app-root .content-body .modulo-container .modulo-header {
+  align-items: center;
+  gap: 20px;
+}
+
+app-root .content-body .modulo-container .title {
+  color: var(--ink-950);
+  font-size: clamp(1.45rem, 2vw, 1.85rem);
+  font-weight: 720;
+  letter-spacing: -.045em;
+}
+
+app-root .content-body .modulo-container .subtitle {
+  color: var(--muted);
+  font-size: .9rem;
+  line-height: 1.6;
+}
+
+app-root .content-body .modulo-container .count-badge,
+app-root .content-body .modulo-container .code-badge,
+app-root .content-body .modulo-container .placa-badge {
+  border: 1px solid #e8dcc8;
+  border-radius: 999px;
+  background: var(--bronze-100);
+  color: var(--bronze-700);
+  font-family: inherit;
+  font-weight: 700;
+}
+
+app-root .content-body .modulo-container .control-card,
+app-root .content-body .modulo-container .table-wrapper {
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--surface);
+  box-shadow: var(--shadow-card);
+  backdrop-filter: none;
+}
+
+app-root .content-body .modulo-container .control-card {
+  padding: 1rem 1.15rem;
+}
+
+app-root .content-body .modulo-container .search-box input {
+  min-height: 44px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface-soft);
+  color: var(--ink-900);
+}
+
+app-root .content-body .modulo-container .search-box input::placeholder {
+  color: var(--muted-light);
+}
+
+app-root .content-body .modulo-container .search-box input:focus {
+  border-color: var(--bronze-600);
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(167, 125, 73, .13);
+}
+
+app-root .content-body .modulo-container .premium-table {
+  color: var(--ink-800);
+}
+
+app-root .content-body .modulo-container .premium-table th {
+  border-bottom: 1px solid var(--line);
+  background: #f8f7f3;
+  color: #7d827f;
+  font-size: .69rem;
+  font-weight: 750;
+  letter-spacing: .075em;
+}
+
+app-root .content-body .modulo-container .premium-table td {
+  border-bottom: 1px solid #efede7;
+}
+
+app-root .content-body .modulo-container .table-row:hover {
+  background: #fbfaf7;
+}
+
+app-root .content-body .modulo-container .id-badge {
+  background: #f1f0ec;
+  color: var(--muted);
+}
+
+app-root .content-body .modulo-container .client-name,
+app-root .content-body .modulo-container .item-name,
+app-root .content-body .modulo-container .vehicle-info,
+app-root .content-body .modulo-container .estado-name {
+  color: var(--ink-900);
+}
+
+app-root .content-body .modulo-container .contact-item,
+app-root .content-body .modulo-container .address-text,
+app-root .content-body .modulo-container .mecanico-text,
+app-root .content-body .modulo-container .km-text,
+app-root .content-body .modulo-container .price-tag {
+  color: var(--ink-700);
+}
+
+app-root .content-body .modulo-container .contact-item.email,
+app-root .content-body .modulo-container .item-desc,
+app-root .content-body .modulo-container .vehicle-sub,
+app-root .content-body .modulo-container .user-sub,
+app-root .content-body .modulo-container .stock-min,
+app-root .content-body .modulo-container .date-box {
+  color: var(--muted);
+}
+
+app-root .content-body .modulo-container .status-pill,
+app-root .content-body .modulo-container .cat-pill {
+  border: 1px solid #e8e3d8;
+  background: #f5f3ee;
+  color: var(--ink-700);
+}
+
+app-root .content-body .modulo-container .status-pill.active {
+  border-color: #d2e7dc;
+  background: #edf6f0;
+  color: var(--success);
+}
+
+app-root .content-body .modulo-container .status-pill.inactive {
+  border-color: #f0d7d3;
+  background: #fbefed;
+  color: var(--danger);
+}
+
+app-root .content-body .modulo-container .stock-val {
+  color: var(--success);
+}
+
+app-root .content-body .modulo-container .stock-val.stock-warning {
+  color: var(--danger);
+}
+
+app-root .content-body .modulo-container .btn-primary,
+app-root .content-body .primary-button,
+app-root .content-body .btn-login {
+  min-height: 42px;
+  border: 1px solid var(--bronze-700);
+  border-radius: 10px;
+  background: linear-gradient(135deg, #a98250, #8f693c);
+  color: #fff;
+  box-shadow: 0 5px 12px rgba(124, 87, 42, .16);
+  font-weight: 650;
+}
+
+app-root .content-body .modulo-container .btn-primary:hover,
+app-root .content-body .primary-button:hover:not(:disabled) {
+  border-color: #76552f;
+  background: linear-gradient(135deg, #987244, #7d5b35);
+  box-shadow: 0 8px 18px rgba(124, 87, 42, .22);
+  transform: translateY(-1px);
+}
+
+app-root .content-body .primary-button:disabled,
+app-root .content-body .modulo-container .btn-primary:disabled {
+  cursor: not-allowed;
+  opacity: .58;
+  transform: none;
+}
+
+app-root .content-body .secondary-button,
+app-root .content-body .modulo-container .btn-secondary {
+  min-height: 40px;
+  border: 1px solid var(--line-strong);
+  border-radius: 10px;
+  background: #fff;
+  color: var(--ink-700);
+  font-weight: 650;
+}
+
+app-root .content-body .secondary-button:hover,
+app-root .content-body .modulo-container .btn-secondary:hover {
+  border-color: #c9b99f;
+  background: #f8f5ef;
+}
+
+app-root .content-body .modulo-container .btn-icon-edit {
+  border: 1px solid #e8dcc8;
+  border-radius: 9px;
+  background: #f7f2e9;
+  color: var(--bronze-700);
+}
+
+app-root .content-body .modulo-container .btn-icon-edit:hover {
+  border-color: var(--bronze-700);
+  background: var(--bronze-700);
+  color: #fff;
+}
+
+app-root .content-body .modulo-container .btn-icon-delete:hover {
+  background: var(--danger);
+  color: #fff;
+}
+
+/* Shared card, form, table and modal system for the newer pages. */
+app-root .content-body .admin-page,
+app-root .content-body .billing-page,
+app-root .content-body .inventory-page {
+  color: var(--ink-900);
+}
+
+app-root .content-body .page-header h1 {
+  color: var(--ink-950);
+  font-size: clamp(1.5rem, 2vw, 1.9rem);
+  font-weight: 720;
+  letter-spacing: -.045em;
+}
+
+app-root .content-body .page-header p,
+app-root .content-body .detail-heading p,
+app-root .content-body .panel-heading p,
+app-root .content-body .admin-page > .page-header p {
+  color: var(--muted);
+  line-height: 1.65;
+}
+
+app-root .content-body .eyebrow {
+  color: var(--bronze-700) !important;
+  font-size: .68rem;
+  font-weight: 750;
+  letter-spacing: .13em;
+}
+
+app-root .content-body .panel,
+app-root .content-body .form-modal {
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--surface);
+  box-shadow: var(--shadow-card);
+}
+
+app-root .content-body .panel {
+  padding: 23px;
+}
+
+app-root .content-body .panel h2,
+app-root .content-body .form-modal h2 {
+  color: var(--ink-900);
+  font-size: 1.06rem;
+  letter-spacing: -.02em;
+}
+
+app-root .content-body .invoice-item,
+app-root .content-body .role-item,
+app-root .content-body .user-item {
+  border-color: var(--line);
+  border-radius: 12px;
+  background: #fff;
+  transition: border-color .18s ease, background .18s ease, transform .18s ease;
+}
+
+app-root .content-body .invoice-item:hover,
+app-root .content-body .role-item:hover,
+app-root .content-body .user-item:hover {
+  border-color: #d4c3a9;
+  transform: translateY(-1px);
+}
+
+app-root .content-body .invoice-item.selected,
+app-root .content-body .role-item.selected,
+app-root .content-body .user-item.selected {
+  border-color: #b79566;
+  background: #faf6ef;
+  box-shadow: inset 3px 0 #a77d49;
+}
+
+app-root .content-body .invoice-item span,
+app-root .content-body .user-summary span,
+app-root .content-body .user-summary small,
+app-root .content-body .role-summary span {
+  color: var(--muted);
+}
+
+app-root .content-body input:not([type="checkbox"]):not([type="radio"]),
+app-root .content-body select,
+app-root .content-body textarea {
+  min-height: 42px;
+  border: 1px solid var(--line-strong);
+  border-radius: 9px;
+  background: #fff;
+  color: var(--ink-900);
+  box-shadow: none;
+}
+
+app-root .content-body textarea {
+  min-height: 96px;
+  resize: vertical;
+}
+
+app-root .content-body input::placeholder,
+app-root .content-body textarea::placeholder {
+  color: #a0a6ad;
+}
+
+app-root .content-body input:not([type="checkbox"]):not([type="radio"]):focus,
+app-root .content-body select:focus,
+app-root .content-body textarea:focus {
+  border-color: var(--bronze-600);
+  outline: 0;
+  box-shadow: 0 0 0 3px rgba(167, 125, 73, .13);
+}
+
+app-root .content-body label {
+  color: var(--ink-700);
+  font-size: .83rem;
+  font-weight: 650;
+}
+
+app-root .content-body input[type="checkbox"],
+app-root .content-body input[type="radio"] {
+  accent-color: var(--bronze-700);
+}
+
+app-root .content-body table {
+  color: var(--ink-800);
+}
+
+app-root .content-body th {
+  border-color: var(--line);
+  background: #f8f7f3;
+  color: #7d827f;
+  font-size: .68rem;
+  font-weight: 750;
+  letter-spacing: .075em;
+}
+
+app-root .content-body td {
+  border-color: #efede7;
+}
+
+app-root .content-body table tbody td,
+app-root .content-body table tbody td * {
+  color: #202b38 !important;
+}
+
+app-root .content-body table tbody td .gravedad-pill.badge-leve {
+  border: 1px solid #cce5d6;
+  background: #edf6f0;
+  color: #21734d !important;
+}
+
+app-root .content-body table tbody td .gravedad-pill.badge-moderada {
+  border: 1px solid #eadcad;
+  background: #faf4df;
+  color: #80620c !important;
+}
+
+app-root .content-body table tbody td .gravedad-pill.badge-grave {
+  border: 1px solid #efd0b5;
+  background: #fbefe4;
+  color: #a34a15 !important;
+}
+
+app-root .content-body table tbody td .gravedad-pill.badge-critica {
+  border: 1px solid #efceca;
+  background: #fbefed;
+  color: #a33b37 !important;
+}
+
+app-root .content-body table tbody td .orden-badge,
+app-root .content-body table tbody td .code-badge,
+app-root .content-body table tbody td .placa-badge,
+app-root .content-body table tbody td .id-badge {
+  border-color: #e8dcc8;
+  background: #f5efe5;
+  color: #795b36 !important;
+}
+
+app-root .content-body table tbody td .status-pill.active,
+app-root .content-body table tbody td .status.paid,
+app-root .content-body table tbody td .movement-type:not(.out) {
+  color: #28694f !important;
+}
+
+app-root .content-body table tbody td .status-pill.inactive,
+app-root .content-body table tbody td .status.cancelled,
+app-root .content-body table tbody td .movement-type.out {
+  color: #a3443e !important;
+}
+
+app-root .content-body tbody tr:hover {
+  background: #fbfaf7;
+}
+
+app-root .content-body .status {
+  border: 1px solid #eadbbf;
+  background: #f8f0df;
+  color: #856431 !important;
+}
+
+app-root .content-body .status.paid {
+  border-color: #d2e7dc;
+  background: #edf6f0;
+  color: var(--success) !important;
+}
+
+app-root .content-body .status.cancelled {
+  border-color: #f0d7d3;
+  background: #fbefed;
+  color: var(--danger) !important;
+}
+
+app-root .content-body .movement-type {
+  border: 1px solid #d2e7dc;
+  background: #edf6f0;
+  color: var(--success);
+}
+
+app-root .content-body .movement-type.out {
+  border-color: #f0d7d3;
+  background: #fbefed;
+  color: var(--danger);
+}
+
+app-root .content-body .modal-backdrop {
+  background: rgba(15, 25, 38, .62);
+  backdrop-filter: blur(7px);
+}
+
+app-root .content-body .form-modal,
+app-root .content-body .modulo-container .modal-card {
+  max-height: min(90vh, 900px);
+  overflow-y: auto;
+  padding: 26px;
+}
+
+app-root .content-body .form-modal h3,
+app-root .content-body .modulo-container .modal-header h3 {
+  color: var(--ink-950);
+}
+
+app-root .content-body .form-modal .modal-actions,
+app-root .content-body .modulo-container .modal-actions {
+  gap: 10px;
+}
+
+app-root .content-body .danger-text,
+app-root .content-body .validation-message,
+app-root .content-body .error-hint {
+  color: var(--danger);
+}
+
+app-root .content-body .empty-state {
+  color: var(--muted);
+}
+
+app-root .content-body .totals .grand-total {
+  border-color: var(--line-strong);
+  color: var(--ink-950);
+}
+
+@media (max-width: 760px) {
+  app-root .content-body .modulo-container .modulo-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  app-root .content-body .panel {
+    padding: 18px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: .01ms !important;
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+  }
 }
