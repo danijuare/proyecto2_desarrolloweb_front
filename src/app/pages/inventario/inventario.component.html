@@ -1,15 +1,19 @@
 <section class="inventory-page">
-  <header class="page-header">
+  <header class="page-header inventory-heading">
     <div>
       <p class="eyebrow">Inventario</p>
       <h1>Movimientos y consumo de repuestos</h1>
       <p>Registra entradas/salidas y los repuestos usados en acciones de reparación.</p>
     </div>
+    <div class="inventory-heading-mark"><span>CONTROL</span><strong>STOCK</strong></div>
   </header>
 
   <div class="forms-grid">
-    <section class="panel" *ngIf="puedeRegistrarMovimiento()">
-      <h2>Registrar movimiento</h2>
+    <section class="panel entry-panel movement-panel" *ngIf="puedeRegistrarMovimiento()">
+      <div class="panel-heading">
+        <span class="panel-index">01</span>
+        <div><p class="section-kicker">ALMACÉN</p><h2>Registrar movimiento</h2><span>Actualiza las existencias disponibles</span></div>
+      </div>
       <form [formGroup]="movimientoForm" (ngSubmit)="registrarMovimiento()">
         <label>
           Repuesto
@@ -37,8 +41,11 @@
       </form>
     </section>
 
-    <section class="panel" *ngIf="puedeRegistrarUso()">
-      <h2>Registrar repuesto usado</h2>
+    <section class="panel entry-panel consumption-panel" *ngIf="puedeRegistrarUso()">
+      <div class="panel-heading">
+        <span class="panel-index">02</span>
+        <div><p class="section-kicker">REPARACIONES</p><h2>Registrar repuesto usado</h2><span>Asocia el consumo a una acción</span></div>
+      </div>
       <form [formGroup]="usoForm" (ngSubmit)="registrarUso()">
         <label>
           Acción de reparación
@@ -71,7 +78,7 @@
   </div>
 
   <section class="panel history-panel">
-    <h2>Historial de movimientos</h2>
+    <div class="history-heading"><div><p class="section-kicker">TRAZABILIDAD</p><h2>Historial de movimientos</h2></div><span class="history-label">ENTRADAS Y SALIDAS</span></div>
     <p *ngIf="cargandoMovimientos" class="empty-state">Cargando movimientos...</p>
     <p *ngIf="!cargandoMovimientos && movimientos.length === 0" class="empty-state">No hay movimientos registrados.</p>
     <div class="table-scroll" *ngIf="!cargandoMovimientos && movimientos.length > 0">
@@ -92,7 +99,7 @@
   </section>
 
   <section class="panel history-panel" *ngIf="puedeRegistrarUso() || esAdministrador()">
-    <h2>Repuestos usados en reparaciones</h2>
+    <div class="history-heading"><div><p class="section-kicker">CONSUMO OPERATIVO</p><h2>Repuestos usados en reparaciones</h2></div><span class="history-label">DETALLE POR ACCIÓN</span></div>
     <p *ngIf="cargandoUsos" class="empty-state">Cargando consumos...</p>
     <p *ngIf="!cargandoUsos && usos.length === 0" class="empty-state">No hay consumos registrados.</p>
     <div class="table-scroll" *ngIf="!cargandoUsos && usos.length > 0">

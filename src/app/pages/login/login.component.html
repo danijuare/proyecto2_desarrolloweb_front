@@ -1,61 +1,51 @@
-<div class="login-wrapper">
-  <section class="login-showcase" aria-label="TallerPro, gestión de taller">
-    <div class="showcase-brand">
-      <div class="showcase-mark" aria-hidden="true">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
-        </svg>
+<main class="login-wrapper">
+  <div class="garage-decoration" aria-hidden="true">
+    <span class="decoration-ring"></span>
+    <span class="decoration-line"></span>
+  </div>
+
+  <section class="login-card" aria-label="Acceso a Taller DJ - Soluciones">
+    <div class="card-accent" aria-hidden="true"></div>
+
+    <header class="brand-header">
+      <div class="brand-lockup">
+        <div class="logo-badge" aria-hidden="true">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
+          </svg>
+        </div>
+        <div class="brand-copy">
+          <h1 class="brand-title">TALLER DJ</h1>
+          <p class="brand-subtitle">SOLUCIONES AUTOMOTRICES</p>
+        </div>
       </div>
-      <div>
-        <p class="showcase-brand-name">TALLER <span>PRO</span></p>
-        <p class="showcase-brand-tagline">GESTIÓN AUTOMOTRIZ</p>
-      </div>
+      <span class="brand-status"><span></span> SISTEMA DE GESTIÓN</span>
+    </header>
+
+    <div class="login-intro">
+      <p class="eyebrow">PORTAL DE ACCESO</p>
+      <h2 class="login-heading">Tu taller, en marcha.</h2>
+      <p class="login-description">Ingresa tus credenciales para administrar tu espacio de trabajo.</p>
     </div>
 
-    <div class="showcase-copy">
-      <p class="showcase-eyebrow">Excelencia en cada detalle</p>
-      <h1>Tu taller, bajo <em>control.</em></h1>
-      <p class="showcase-description">Una plataforma integral para coordinar el trabajo, cuidar cada vehículo y ofrecer una experiencia impecable a tus clientes.</p>
-      <ul class="showcase-features">
-        <li><span class="feature-dot"></span>Operaciones conectadas</li>
-        <li><span class="feature-dot"></span>Control de inventario</li>
-        <li><span class="feature-dot"></span>Seguimiento en tiempo real</li>
-      </ul>
-    </div>
-
-    <div class="showcase-footer">GESTIÓN PRECISA. SERVICIO EXCEPCIONAL.</div>
-  </section>
-
-  <main class="login-panel">
-    <div class="login-card">
-    <div class="brand-header">
-      <div class="logo-badge">
-        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
-        </svg>
-      </div>
-      <h1 class="brand-title">TALLER <span>PRO</span></h1>
-      <p class="brand-subtitle">Gestión Integral de Taller Mecánico</p>
-      <h2 class="login-heading">Bienvenido de nuevo</h2>
-      <p class="login-intro">Ingresa tus credenciales para acceder a tu espacio de trabajo.</p>
-    </div>
-
-    <!-- Formulario vinculado -->
     <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
-      
-      <!-- Mensaje de error si falla la API -->
       <div *ngIf="errorMensaje" class="error-banner">
-        {{ errorMensaje }}
+        <svg class="error-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+        <span>{{ errorMensaje }}</span>
       </div>
 
       <div class="form-group">
-        <label for="email">Usuario o Correo</label>
+        <label for="email">Usuario o correo electrónico</label>
         <div class="input-container">
           <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
             <circle cx="12" cy="7" r="4"></circle>
           </svg>
-          <input type="email" id="email" formControlName="email" placeholder="ej. admin@taller.com" />
+          <input type="email" id="email" formControlName="email" placeholder="ej. admin@tallerdj.com" />
         </div>
       </div>
 
@@ -74,17 +64,27 @@
       </div>
 
       <button type="submit" [disabled]="cargando" class="btn-login">
-        <span>{{ cargando ? 'Iniciando sesión...' : 'Ingresar al Sistema' }}</span>
-        <svg *ngIf="!cargando" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <span>{{ cargando ? 'Iniciando sesión...' : 'Ingresar al sistema' }}</span>
+        <svg *ngIf="!cargando" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <line x1="5" y1="12" x2="19" y2="12"></line>
           <polyline points="12 5 19 12 12 19"></polyline>
         </svg>
       </button>
     </form>
 
-    <div class="login-footer">
-      <p>&copy; 2026 TallerPro. Todos los derechos reservados.</p>
+    <div class="service-strip" aria-label="Funciones del sistema">
+      <span>Órdenes de trabajo</span>
+      <i aria-hidden="true"></i>
+      <span>Inventario</span>
+      <i aria-hidden="true"></i>
+      <span>Seguimiento</span>
     </div>
-    </div>
-  </main>
-</div>
+
+    <footer class="login-footer">
+      <span class="footer-rule" aria-hidden="true"></span>
+      <p>&copy; 2026 Taller DJ - Soluciones. Todos los derechos reservados.</p>
+    </footer>
+  </section>
+
+  <p class="page-caption"><span></span> GESTIÓN PRECISA. SERVICIO CONFIABLE.</p>
+</main>

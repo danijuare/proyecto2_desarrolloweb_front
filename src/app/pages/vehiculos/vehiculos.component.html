@@ -1,7 +1,8 @@
-<div class="modulo-container">
+<div class="modulo-container premium-page">
   <!-- Header de la sección -->
   <header class="modulo-header">
     <div class="header-info">
+      <p class="page-kicker">Taller · Inventario</p>
       <div class="title-with-badge">
         <h2 class="title">Parque Vehicular</h2>
         <span class="count-badge">{{ vehiculosFiltrados.length }} Vehículos</span>
@@ -19,7 +20,11 @@
   </header>
 
   <!-- Buscador -->
-  <div class="control-card">
+  <div class="control-card toolbar-card">
+    <div class="toolbar-copy">
+      <strong>Buscar en el parque vehicular</strong>
+      <span>Filtrá unidades por sus datos de identificación o propietario.</span>
+    </div>
     <div class="search-box">
       <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <circle cx="11" cy="11" r="8"></circle>
@@ -36,6 +41,10 @@
 
   <!-- Tabla de Vehículos -->
   <div class="table-wrapper">
+    <div class="table-caption">
+      <div><span class="caption-mark"></span><strong>Unidades registradas</strong></div>
+      <span>{{ vehiculosFiltrados.length }} resultados</span>
+    </div>
     <div *ngIf="cargando" class="state-container">
       <div class="spinner"></div>
       <p>Cargando lista de vehículos...</p>
@@ -99,16 +108,17 @@
 
   <!-- Modal Crear / Editar -->
   <div class="modal-backdrop" *ngIf="mostrarModal">
-    <div class="modal-card">
+    <div class="modal-card dialog-panel">
       <div class="modal-header">
         <div>
+          <span class="dialog-kicker">Ficha del vehículo</span>
           <h3>{{ modoEdicion ? 'Editar Vehículo' : 'Nuevo Vehículo' }}</h3>
           <p class="modal-subtitle">Completá las características del vehículo y asignalo a un cliente</p>
         </div>
         <button class="btn-close" (click)="cerrarModal()">&times;</button>
       </div>
 
-      <form [formGroup]="vehiculoForm" (ngSubmit)="guardar()">
+      <form class="dialog-form" [formGroup]="vehiculoForm" (ngSubmit)="guardar()">
         <div class="modal-body">
           
           <div class="form-group">

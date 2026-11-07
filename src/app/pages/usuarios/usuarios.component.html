@@ -1,6 +1,7 @@
 <section class="admin-page">
   <header class="page-header">
     <div>
+      <span class="page-mark">Acceso y seguridad</span>
       <p class="eyebrow">Administración</p>
       <h1>Usuarios</h1>
       <p>Administra cuentas, roles y permisos directos.</p>
@@ -8,9 +9,15 @@
     <button class="primary-button" type="button" (click)="abrirCrear()">Nuevo usuario</button>
   </header>
 
+  <div class="toolbar-band">
+    <div class="toolbar-emblem">02</div>
+    <div><strong>Directorio de cuentas</strong><span>Gestiona usuarios y administra sus permisos individuales.</span></div>
+    <span class="toolbar-count">{{ usuarios.length }} cuentas</span>
+  </div>
+
   <div class="users-layout">
     <section class="panel users-panel">
-      <h2>Cuentas activas</h2>
+      <div class="section-heading"><div><span class="section-kicker">Directorio</span><h2>Cuentas activas</h2></div><span class="section-count">{{ usuarios.length }}</span></div>
       <p *ngIf="cargandoUsuarios" class="empty-state">Cargando usuarios...</p>
       <p *ngIf="!cargandoUsuarios && usuarios.length === 0" class="empty-state">No hay usuarios activos.</p>
       <div class="user-list" *ngIf="!cargandoUsuarios && usuarios.length > 0">
@@ -75,30 +82,38 @@
   </div>
 
   <div class="modal-backdrop" *ngIf="mostrarFormulario" (click)="cerrarFormulario()">
-    <section class="form-modal" role="dialog" aria-modal="true" aria-labelledby="user-form-title"
+    <section class="form-modal dialog-panel" role="dialog" aria-modal="true" aria-labelledby="user-form-title"
       (click)="$event.stopPropagation()">
-      <h2 id="user-form-title">{{ idEdicion === null ? 'Crear usuario' : 'Editar usuario' }}</h2>
-      <form [formGroup]="usuarioForm" (ngSubmit)="guardarUsuario()">
-        <label>
-          Rol
-          <select formControlName="id_rol">
-            <option [ngValue]="null" disabled>Selecciona un rol</option>
-            <option *ngFor="let rol of roles" [ngValue]="rol.id_rol">{{ rol.nombre }}</option>
-          </select>
-        </label>
-        <div class="name-fields">
-          <label>Nombre<input formControlName="nombre" maxlength="80"></label>
-          <label>Apellido<input formControlName="apellido" maxlength="80"></label>
+      <header class="dialog-heading">
+        <div>
+          <span class="dialog-kicker">Cuenta del sistema</span>
+          <h2 id="user-form-title">{{ idEdicion === null ? 'Crear usuario' : 'Editar usuario' }}</h2>
+          <p>Completa la información de acceso y asigna un rol.</p>
         </div>
-        <label>Correo electrónico<input formControlName="email" type="email" maxlength="120" autocomplete="email"></label>
-        <label>
-          {{ idEdicion === null ? 'Contraseña' : 'Nueva contraseña (opcional)' }}
-          <input formControlName="password" type="password" autocomplete="new-password">
-        </label>
-        <small class="validation-message" *ngIf="usuarioForm.controls['password'].touched && usuarioForm.controls['password'].invalid">
-          La contraseña debe tener al menos 8 caracteres.
-        </small>
-        <div class="modal-actions">
+      </header>
+      <form [formGroup]="usuarioForm" (ngSubmit)="guardarUsuario()">
+        <div class="dialog-body">
+          <label>
+            Rol
+            <select formControlName="id_rol">
+              <option [ngValue]="null" disabled>Selecciona un rol</option>
+              <option *ngFor="let rol of roles" [ngValue]="rol.id_rol">{{ rol.nombre }}</option>
+            </select>
+          </label>
+          <div class="name-fields">
+            <label>Nombre<input formControlName="nombre" maxlength="80"></label>
+            <label>Apellido<input formControlName="apellido" maxlength="80"></label>
+          </div>
+          <label>Correo electrónico<input formControlName="email" type="email" maxlength="120" autocomplete="email"></label>
+          <label>
+            {{ idEdicion === null ? 'Contraseña' : 'Nueva contraseña (opcional)' }}
+            <input formControlName="password" type="password" autocomplete="new-password">
+          </label>
+          <small class="validation-message" *ngIf="usuarioForm.controls['password'].touched && usuarioForm.controls['password'].invalid">
+            La contraseña debe tener al menos 8 caracteres.
+          </small>
+        </div>
+        <div class="modal-actions dialog-footer">
           <button class="secondary-button" type="button" (click)="cerrarFormulario()">Cancelar</button>
           <button class="primary-button" type="submit" [disabled]="guardandoUsuario">
             {{ guardandoUsuario ? 'Guardando...' : 'Guardar' }}

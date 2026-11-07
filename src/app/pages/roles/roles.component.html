@@ -1,6 +1,7 @@
 <section class="admin-page">
   <header class="page-header">
     <div>
+      <span class="page-mark">Acceso y seguridad</span>
       <p class="eyebrow">Administración</p>
       <h1>Roles y permisos</h1>
       <p>Define los perfiles de acceso y los permisos asociados.</p>
@@ -8,9 +9,15 @@
     <button class="primary-button" type="button" (click)="abrirCrear()">Nuevo rol</button>
   </header>
 
+  <div class="toolbar-band">
+    <div class="toolbar-emblem">03</div>
+    <div><strong>Perfiles de acceso</strong><span>Configura roles y los permisos asociados a cada perfil.</span></div>
+    <span class="toolbar-count">{{ roles.length }} roles</span>
+  </div>
+
   <div class="roles-layout">
     <section class="panel roles-panel">
-      <h2>Roles registrados</h2>
+      <div class="section-heading"><div><span class="section-kicker">Perfiles</span><h2>Roles registrados</h2></div><span class="section-count">{{ roles.length }}</span></div>
       <p *ngIf="cargandoRoles" class="empty-state">Cargando roles...</p>
       <p *ngIf="!cargandoRoles && roles.length === 0" class="empty-state">No hay roles registrados.</p>
       <div class="role-list" *ngIf="!cargandoRoles && roles.length > 0">
@@ -64,22 +71,30 @@
   </div>
 
   <div class="modal-backdrop" *ngIf="mostrarFormulario" (click)="cerrarFormulario()">
-    <section class="form-modal" role="dialog" aria-modal="true" aria-labelledby="role-form-title"
+    <section class="form-modal dialog-panel" role="dialog" aria-modal="true" aria-labelledby="role-form-title"
       (click)="$event.stopPropagation()">
-      <h2 id="role-form-title">{{ idEdicion === null ? 'Crear rol' : 'Editar rol' }}</h2>
+      <header class="dialog-heading">
+        <div>
+          <span class="dialog-kicker">Perfil de acceso</span>
+          <h2 id="role-form-title">{{ idEdicion === null ? 'Crear rol' : 'Editar rol' }}</h2>
+          <p>Define el nombre y la descripción de este perfil.</p>
+        </div>
+      </header>
       <form [formGroup]="rolForm" (ngSubmit)="guardarRol()">
-        <label>
-          Nombre
-          <input formControlName="nombre" maxlength="50" autocomplete="off">
-        </label>
-        <small class="validation-message" *ngIf="rolForm.controls['nombre'].touched && rolForm.controls['nombre'].invalid">
-          El nombre es obligatorio (máximo 50 caracteres).
-        </small>
-        <label>
-          Descripción
-          <textarea formControlName="descripcion" maxlength="255" rows="3"></textarea>
-        </label>
-        <div class="modal-actions">
+        <div class="dialog-body">
+          <label>
+            Nombre
+            <input formControlName="nombre" maxlength="50" autocomplete="off">
+          </label>
+          <small class="validation-message" *ngIf="rolForm.controls['nombre'].touched && rolForm.controls['nombre'].invalid">
+            El nombre es obligatorio (máximo 50 caracteres).
+          </small>
+          <label>
+            Descripción
+            <textarea formControlName="descripcion" maxlength="255" rows="3"></textarea>
+          </label>
+        </div>
+        <div class="modal-actions dialog-footer">
           <button class="secondary-button" type="button" (click)="cerrarFormulario()">Cancelar</button>
           <button class="primary-button" type="submit">Guardar</button>
         </div>

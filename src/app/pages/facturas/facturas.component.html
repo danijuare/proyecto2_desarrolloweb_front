@@ -1,6 +1,7 @@
 <section class="billing-page">
   <header class="page-header">
     <div>
+      <span class="page-mark">Control financiero</span>
       <p class="eyebrow">Administración del taller</p>
       <h1>Facturación</h1>
       <p>Genera facturas por orden de trabajo y administra sus conceptos.</p>
@@ -10,9 +11,15 @@
     </button>
   </header>
 
+  <div class="toolbar-band">
+    <div class="toolbar-emblem">01</div>
+    <div><strong>Registro de facturación</strong><span>Selecciona una factura para revisar conceptos, estado y totales.</span></div>
+    <span class="toolbar-count">{{ facturas.length }} facturas</span>
+  </div>
+
   <div class="billing-layout">
     <section class="panel invoice-list">
-      <h2>Facturas</h2>
+      <div class="section-heading"><div><span class="section-kicker">Historial</span><h2>Facturas</h2></div><span class="section-count">{{ facturas.length }}</span></div>
       <p *ngIf="cargandoFacturas" class="empty-state">Cargando facturas...</p>
       <p *ngIf="!cargandoFacturas && facturas.length === 0" class="empty-state">No hay facturas registradas.</p>
       <article class="invoice-item" *ngFor="let factura of facturas"
@@ -80,34 +87,42 @@
   </div>
 
   <div class="modal-backdrop" *ngIf="mostrarFacturaForm" (click)="cerrarFacturaForm()">
-    <section class="form-modal" role="dialog" aria-modal="true" aria-labelledby="invoice-form-title"
+    <section class="form-modal dialog-panel" role="dialog" aria-modal="true" aria-labelledby="invoice-form-title"
       (click)="$event.stopPropagation()">
-      <h2 id="invoice-form-title">{{ idFacturaEdicion === null ? 'Crear factura' : 'Editar factura' }}</h2>
-      <form [formGroup]="facturaForm" (ngSubmit)="guardarFactura()">
-        <label>
-          Orden de trabajo
-          <select formControlName="id_orden">
-            <option [ngValue]="null" disabled>Selecciona una orden</option>
-            <option *ngFor="let orden of ordenesDisponibles" [ngValue]="orden.id_orden">
-              Orden #{{ orden.id_orden }} · {{ orden.placa_vehiculo || orden.vehiculo_info }}
-            </option>
-          </select>
-        </label>
-        <div class="number-fields">
-          <label>Subtotal mano de obra<input formControlName="subtotal_mano_obra" type="number" min="0" step="0.01"></label>
-          <label>Subtotal repuestos<input formControlName="subtotal_repuestos" type="number" min="0" step="0.01"></label>
-          <label>Impuestos<input formControlName="impuestos" type="number" min="0" step="0.01"></label>
+      <header class="dialog-heading">
+        <div>
+          <span class="dialog-kicker">Documento de cobro</span>
+          <h2 id="invoice-form-title">{{ idFacturaEdicion === null ? 'Crear factura' : 'Editar factura' }}</h2>
+          <p>Asocia la orden de trabajo y define el estado de pago.</p>
         </div>
-        <label>
-          Estado de pago
-          <select formControlName="estado_pago">
-            <option value="pendiente">Pendiente</option>
-            <option value="pagada">Pagada</option>
-            <option value="anulada">Anulada</option>
-          </select>
-        </label>
-        <p class="form-note">El total se calcula en el servidor. Agregar conceptos también actualiza los subtotales.</p>
-        <div class="modal-actions">
+      </header>
+      <form [formGroup]="facturaForm" (ngSubmit)="guardarFactura()">
+        <div class="dialog-body">
+          <label>
+            Orden de trabajo
+            <select formControlName="id_orden">
+              <option [ngValue]="null" disabled>Selecciona una orden</option>
+              <option *ngFor="let orden of ordenesDisponibles" [ngValue]="orden.id_orden">
+                Orden #{{ orden.id_orden }} · {{ orden.placa_vehiculo || orden.vehiculo_info }}
+              </option>
+            </select>
+          </label>
+          <div class="number-fields">
+            <label>Subtotal mano de obra<input formControlName="subtotal_mano_obra" type="number" min="0" step="0.01"></label>
+            <label>Subtotal repuestos<input formControlName="subtotal_repuestos" type="number" min="0" step="0.01"></label>
+            <label>Impuestos<input formControlName="impuestos" type="number" min="0" step="0.01"></label>
+          </div>
+          <label>
+            Estado de pago
+            <select formControlName="estado_pago">
+              <option value="pendiente">Pendiente</option>
+              <option value="pagada">Pagada</option>
+              <option value="anulada">Anulada</option>
+            </select>
+          </label>
+          <p class="form-note">El total se calcula en el servidor. Agregar conceptos también actualiza los subtotales.</p>
+        </div>
+        <div class="modal-actions dialog-footer">
           <button class="secondary-button" type="button" (click)="cerrarFacturaForm()">Cancelar</button>
           <button class="primary-button" type="submit" [disabled]="guardandoFactura">
             {{ guardandoFactura ? 'Guardando...' : 'Guardar factura' }}
@@ -118,23 +133,31 @@
   </div>
 
   <div class="modal-backdrop" *ngIf="mostrarDetalleForm" (click)="cerrarDetalleForm()">
-    <section class="form-modal" role="dialog" aria-modal="true" aria-labelledby="detail-form-title"
+    <section class="form-modal dialog-panel" role="dialog" aria-modal="true" aria-labelledby="detail-form-title"
       (click)="$event.stopPropagation()">
-      <h2 id="detail-form-title">{{ idDetalleEdicion === null ? 'Agregar concepto' : 'Editar concepto' }}</h2>
-      <form [formGroup]="detalleForm" (ngSubmit)="guardarDetalle()">
-        <label>
-          Tipo
-          <select formControlName="tipo">
-            <option value="mano_obra">Mano de obra</option>
-            <option value="repuesto">Repuesto</option>
-          </select>
-        </label>
-        <label>Descripción<input formControlName="descripcion" maxlength="255"></label>
-        <div class="number-fields">
-          <label>Cantidad<input formControlName="cantidad" type="number" min="1" step="1"></label>
-          <label>Precio unitario<input formControlName="precio_unitario" type="number" min="0" step="0.01"></label>
+      <header class="dialog-heading">
+        <div>
+          <span class="dialog-kicker">Detalle de factura</span>
+          <h2 id="detail-form-title">{{ idDetalleEdicion === null ? 'Agregar concepto' : 'Editar concepto' }}</h2>
+          <p>Describe el servicio o repuesto incluido en esta factura.</p>
         </div>
-        <div class="modal-actions">
+      </header>
+      <form [formGroup]="detalleForm" (ngSubmit)="guardarDetalle()">
+        <div class="dialog-body">
+          <label>
+            Tipo
+            <select formControlName="tipo">
+              <option value="mano_obra">Mano de obra</option>
+              <option value="repuesto">Repuesto</option>
+            </select>
+          </label>
+          <label>Descripción<input formControlName="descripcion" maxlength="255"></label>
+          <div class="number-fields">
+            <label>Cantidad<input formControlName="cantidad" type="number" min="1" step="1"></label>
+            <label>Precio unitario<input formControlName="precio_unitario" type="number" min="0" step="0.01"></label>
+          </div>
+        </div>
+        <div class="modal-actions dialog-footer">
           <button class="secondary-button" type="button" (click)="cerrarDetalleForm()">Cancelar</button>
           <button class="primary-button" type="submit" [disabled]="guardandoDetalle">
             {{ guardandoDetalle ? 'Guardando...' : 'Guardar concepto' }}

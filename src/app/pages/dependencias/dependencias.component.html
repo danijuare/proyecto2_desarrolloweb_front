@@ -1,5 +1,5 @@
-<section class="admin-page">
-  <header class="page-header">
+<section class="admin-page dependencies-page">
+  <header class="page-header dependencies-heading">
     <div>
       <p class="eyebrow">Administración del taller</p>
       <h1>Dependencias de reparación</h1>
@@ -10,7 +10,13 @@
     </button>
   </header>
 
-  <section class="panel">
+  <section class="dependency-toolbar">
+    <div><span class="toolbar-symbol">↳</span><div><strong>Reglas de precedencia</strong><span>Define el orden de ejecución de las acciones</span></div></div>
+    <span class="dependency-total">{{ dependencias.length }} registradas</span>
+  </section>
+
+  <section class="panel dependency-list">
+    <div class="list-heading"><div><p class="section-kicker">FLUJO DE TRABAJO</p><h2>Dependencias configuradas</h2></div><span>ACCIÓN → PRERREQUISITO</span></div>
     <p *ngIf="cargando" class="empty-state">Cargando dependencias...</p>
     <p *ngIf="!cargando && dependencias.length === 0" class="empty-state">
       No hay dependencias registradas.
@@ -36,8 +42,13 @@
   <div class="modal-backdrop" *ngIf="mostrarFormulario" (click)="cerrarFormulario()">
     <section class="form-modal" role="dialog" aria-modal="true" aria-labelledby="dependency-form-title"
       (click)="$event.stopPropagation()">
-      <h2 id="dependency-form-title">Nueva dependencia</h2>
+      <header class="dependency-modal-header">
+        <span class="modal-kicker">CONFIGURACIÓN DE FLUJO</span>
+        <h2 id="dependency-form-title">Nueva dependencia</h2>
+        <p>Establece qué acción debe completarse antes de otra.</p>
+      </header>
       <form [formGroup]="dependenciaForm" (ngSubmit)="guardar()">
+        <div class="dependency-modal-body">
         <label>
           Acción que tiene el requisito
           <select formControlName="id_accion">
@@ -57,6 +68,7 @@
           </select>
         </label>
         <p class="form-note">Una acción no puede ser prerrequisito de sí misma.</p>
+        </div>
         <div class="modal-actions">
           <button class="secondary-button" type="button" (click)="cerrarFormulario()">Cancelar</button>
           <button class="primary-button" type="submit" [disabled]="guardando">

@@ -1,7 +1,8 @@
-<div class="modulo-container">
+<div class="modulo-container categories-page">
   <!-- Header de la sección -->
-  <header class="modulo-header">
+  <header class="modulo-header page-heading">
     <div class="header-info">
+      <p class="page-kicker">CONFIGURACIÓN <span></span> CLASIFICACIÓN DE PIEZAS</p>
       <div class="title-with-badge">
         <h2 class="title">Categorías de Repuestos</h2>
         <span class="count-badge">{{ categoriasFiltradas.length }} Registros</span>
@@ -19,7 +20,11 @@
   </header>
 
   <!-- Control Bar: Buscador y Acciones -->
-  <div class="control-card">
+  <div class="control-card search-toolbar">
+    <div class="toolbar-copy">
+      <strong>Directorio de categorías</strong>
+      <span>Localiza una clasificación por código o nombre</span>
+    </div>
     <div class="search-box">
       <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <circle cx="11" cy="11" r="8"></circle>
@@ -32,10 +37,15 @@
         placeholder="Buscar por código o nombre..." 
       />
     </div>
+    <span class="toolbar-total">{{ categoriasFiltradas.length }} resultados</span>
   </div>
 
   <!-- Contenedor Principal / Tabla -->
-  <div class="table-wrapper">
+  <div class="table-wrapper table-card">
+    <div class="table-card-heading">
+      <div><span class="section-kicker">CATÁLOGO</span><strong>Clasificaciones registradas</strong></div>
+      <span class="table-meta">Organización del inventario del taller</span>
+    </div>
     <!-- Overlay de Carga -->
     <div *ngIf="cargando" class="state-container">
       <div class="spinner"></div>
@@ -86,8 +96,9 @@
   <!-- Modal Modal Elegante -->
   <div class="modal-backdrop" *ngIf="mostrarModal">
     <div class="modal-card">
-      <div class="modal-header">
+      <div class="modal-header modal-heading">
         <div>
+          <span class="modal-kicker">{{ modoEdicion ? 'EDITAR CLASIFICACIÓN' : 'NUEVA CLASIFICACIÓN' }}</span>
           <h3>{{ modoEdicion ? 'Editar Categoría' : 'Nueva Categoría' }}</h3>
           <p class="modal-subtitle">{{ modoEdicion ? 'Modifica los parámetros de la categoría' : 'Ingresa los datos requeridos' }}</p>
         </div>
@@ -100,7 +111,7 @@
       </div>
 
       <form [formGroup]="categoriaForm" (ngSubmit)="guardar()">
-        <div class="modal-body">
+        <div class="modal-body modal-fields">
           <div class="form-group">
             <label for="nombre">Nombre de la Categoría <span>*</span></label>
             <div class="input-wrapper">
