@@ -112,6 +112,14 @@
             <span>Estados de reparación</span>
           </a>
         </li>
+
+        <li class="menu-category">REPORTES</li>
+        <li>
+          <a routerLink="/dashboard/reportes" routerLinkActive="active">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19V5M4 19h17"></path><path d="m7 15 4-4 3 2 6-7"></path></svg>
+            <span>Reportes</span>
+          </a>
+        </li>
       </ul>
     </nav>
 
@@ -204,6 +212,10 @@
           <a class="home-card" *ngIf="esRol('Administrador')" routerLink="/dashboard/roles">
             <span class="home-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-11V5l-8-3-8 3v6c0 7 8 11 8 11Z"></path><path d="m9 12 2 2 4-4"></path></svg></span>
             <strong>Roles y permisos</strong><span>Configura el acceso de los usuarios.</span><i class="card-arrow" aria-hidden="true">→</i>
+          </a>
+          <a class="home-card" routerLink="/dashboard/reportes">
+            <span class="home-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19V5M4 19h17"></path><path d="m7 15 4-4 3 2 6-7"></path></svg></span>
+            <strong>Reportes</strong><span>Consulta y exporta información del taller.</span><i class="card-arrow" aria-hidden="true">→</i>
           </a>
         </div>
       </section>

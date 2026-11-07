@@ -1,0 +1,144 @@
+<section class="reports-page">
+  <header class="reports-heading">
+    <div>
+      <p class="eyebrow">ANÁLISIS DEL TALLER</p>
+      <h1>Reportes</h1>
+      <p class="subtitle">Consulta, filtra y exporta la información de operación.</p>
+    </div>
+    <div class="report-actions">
+      <button type="button" class="button button-secondary" (click)="imprimir()">Imprimir</button>
+      <button type="button" class="button button-secondary" (click)="descargarPdf()"
+        [disabled]="cargando || errores[reporteSeleccionado]">
+        Descargar PDF
+      </button>
+      <button type="button" class="button button-primary" (click)="exportarExcel()"
+        [disabled]="cargando || errores[reporteSeleccionado]">
+        Descargar Excel
+      </button>
+    </div>
+  </header>
+
+  <p class="export-message" *ngIf="mensajeExportacion" role="status">{{ mensajeExportacion }}</p>
+  <div class="loading-message" *ngIf="cargando" role="status">Cargando información de los reportes…</div>
+
+  <section class="error-list" *ngIf="erroresReporte.length" aria-live="polite">
+    <p *ngFor="let error of erroresReporte"><strong>{{ error.nombre }}:</strong> {{ error.mensaje }}</p>
+  </section>
+
+  <section class="summary-grid" aria-label="Resumen del taller">
+    <article class="summary-card">
+      <span>Órdenes abiertas</span>
+      <strong>{{ ordenesAbiertas }}</strong>
+      <small>Sin fecha de salida</small>
+    </article>
+    <article class="summary-card">
+      <span>Facturas pendientes</span>
+      <strong>{{ facturasPendientes }}</strong>
+      <small>{{ facturas.length }} facturas registradas</small>
+    </article>
+    <article class="summary-card">
+      <span>Total facturado</span>
+      <strong>{{ totalFacturado | currency:'GTQ':'Q':'1.2-2' }}</strong>
+      <small>No incluye facturas anuladas</small>
+    </article>
+    <article class="summary-card">
+      <span>Repuestos bajo mínimo</span>
+      <strong>{{ repuestosBajoMinimo }}</strong>
+      <small>Requieren revisión de existencias</small>
+    </article>
+    <article class="summary-card">
+      <span>Valor del inventario</span>
+      <strong>{{ valorInventario | currency:'GTQ':'Q':'1.2-2' }}</strong>
+      <small>{{ repuestos.length }} repuestos registrados</small>
+    </article>
+    <article class="summary-card">
+      <span>Clientes y vehículos</span>
+      <strong>{{ clientes.length }} / {{ vehiculos.length }}</strong>
+      <small>Registros en el sistema</small>
+    </article>
+  </section>
+
+  <section class="report-panel">
+    <div class="report-toolbar">
+      <div class="report-tabs" role="tablist" aria-label="Tipo de reporte">
+        <button *ngFor="let reporte of reportes" type="button" role="tab"
+          [attr.aria-selected]="reporteSeleccionado === reporte.clave"
+          [class.selected]="reporteSeleccionado === reporte.clave"
+          (click)="seleccionarReporte(reporte.clave)">
+          {{ reporte.nombre }}
+        </button>
+      </div>
+      <label class="search-field">
+        <span class="visually-hidden">Buscar en el reporte</span>
+        <input type="search" [(ngModel)]="busqueda" placeholder="Buscar en el reporte…">
+      </label>
+    </div>
+
+    <div class="table-wrap" [ngSwitch]="reporteSeleccionado">
+      <table *ngSwitchCase="'ordenes'">
+        <thead><tr><th>Orden</th><th>Vehículo</th><th>Mecánico</th><th>Estado</th><th>Ingreso</th><th>Salida</th></tr></thead>
+        <tbody>
+          <tr *ngFor="let orden of ordenesFiltradas">
+            <td>#{{ orden.id_orden }}</td><td>{{ orden.vehiculo_info || orden.placa_vehiculo || '—' }}</td>
+            <td>{{ orden.nombre_mecanico || 'Sin asignar' }}</td><td>{{ orden.nombre_estado || '—' }}</td>
+            <td>{{ orden.fecha_ingreso | date:'shortDate' }}</td><td>{{ orden.fecha_salida ? (orden.fecha_salida | date:'shortDate') : 'Abierta' }}</td>
+          </tr>
+          <tr *ngIf="!ordenesFiltradas.length"><td colspan="6" class="empty-state">No hay órdenes para mostrar.</td></tr>
+        </tbody>
+      </table>
+
+      <table *ngSwitchCase="'facturas'">
+        <thead><tr><th>Factura</th><th>Orden</th><th>Emisión</th><th>Estado</th><th>Mano de obra</th><th>Repuestos</th><th>Total</th></tr></thead>
+        <tbody>
+          <tr *ngFor="let factura of facturasFiltradas">
+            <td>#{{ factura.id_factura }}</td><td>#{{ factura.id_orden }}</td><td>{{ factura.fecha_emision | date:'shortDate' }}</td>
+            <td><span class="status-tag" [ngClass]="'status-' + factura.estado_pago">{{ factura.estado_pago }}</span></td>
+            <td>{{ factura.subtotal_mano_obra | currency:'GTQ':'Q':'1.2-2' }}</td>
+            <td>{{ factura.subtotal_repuestos | currency:'GTQ':'Q':'1.2-2' }}</td>
+            <td>{{ factura.total | currency:'GTQ':'Q':'1.2-2' }}</td>
+          </tr>
+          <tr *ngIf="!facturasFiltradas.length"><td colspan="7" class="empty-state">No hay facturas para mostrar.</td></tr>
+        </tbody>
+      </table>
+
+      <table *ngSwitchCase="'repuestos'">
+        <thead><tr><th>Código</th><th>Repuesto</th><th>Categoría</th><th>Existencia</th><th>Mínimo</th><th>Precio</th><th>Estado</th></tr></thead>
+        <tbody>
+          <tr *ngFor="let repuesto of repuestosFiltrados">
+            <td>{{ repuesto.codigo }}</td><td>{{ repuesto.nombre }}</td><td>{{ repuesto.nombreCategoria || '—' }}</td>
+            <td>{{ repuesto.stock_actual }}</td><td>{{ repuesto.stock_minimo }}</td>
+            <td>{{ repuesto.precio_unitario | currency:'GTQ':'Q':'1.2-2' }}</td>
+            <td><span class="status-tag" [class.status-pendiente]="repuesto.stock_actual <= repuesto.stock_minimo"
+              [class.status-pagada]="repuesto.stock_actual > repuesto.stock_minimo">
+              {{ repuesto.stock_actual <= repuesto.stock_minimo ? 'Bajo mínimo' : 'Disponible' }}
+            </span></td>
+          </tr>
+          <tr *ngIf="!repuestosFiltrados.length"><td colspan="7" class="empty-state">No hay repuestos para mostrar.</td></tr>
+        </tbody>
+      </table>
+
+      <table *ngSwitchCase="'clientes'">
+        <thead><tr><th>Cliente</th><th>Teléfono</th><th>Correo</th><th>Dirección</th><th>Estado</th></tr></thead>
+        <tbody>
+          <tr *ngFor="let cliente of clientesFiltrados">
+            <td>{{ cliente.nombre }} {{ cliente.apellido }}</td><td>{{ cliente.telefono || '—' }}</td>
+            <td>{{ cliente.email || '—' }}</td><td>{{ cliente.direccion || '—' }}</td><td>{{ cliente.condicion || '—' }}</td>
+          </tr>
+          <tr *ngIf="!clientesFiltrados.length"><td colspan="5" class="empty-state">No hay clientes para mostrar.</td></tr>
+        </tbody>
+      </table>
+
+      <table *ngSwitchCase="'vehiculos'">
+        <thead><tr><th>Placa</th><th>Vehículo</th><th>Año</th><th>Color</th><th>VIN</th><th>Cliente</th></tr></thead>
+        <tbody>
+          <tr *ngFor="let vehiculo of vehiculosFiltrados">
+            <td>{{ vehiculo.placa }}</td><td>{{ vehiculo.marca }} {{ vehiculo.modelo }}</td><td>{{ vehiculo.anio || '—' }}</td>
+            <td>{{ vehiculo.color || '—' }}</td><td>{{ vehiculo.vin || '—' }}</td><td>{{ nombreCliente(vehiculo.id_cliente) }}</td>
+          </tr>
+          <tr *ngIf="!vehiculosFiltrados.length"><td colspan="6" class="empty-state">No hay vehículos para mostrar.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <footer class="report-footer">Los datos se muestran según los registros disponibles en el sistema.</footer>
+  </section>
+</section>

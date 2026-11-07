@@ -112,6 +112,12 @@ const routes: Routes = [
         loadComponent: () => import('./pages/estados-accion/estados-accion.component').then(module => module.EstadosAccionComponent),
         canActivate: [AuthGuard],
         data: { roles: ['Administrador'] }
+      },
+      {
+        path: 'reportes',
+        loadComponent: () => import('./pages/reportes/reportes.component').then(module => module.ReportesComponent),
+        canActivate: [AuthGuard],
+        data: { roles: ['Administrador', 'Mecanico', 'Recepcionista', 'Bodeguero'] }
       }
     ]
   },
