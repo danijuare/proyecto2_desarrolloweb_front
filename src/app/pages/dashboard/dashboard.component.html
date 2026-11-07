@@ -3,7 +3,7 @@
     <div class="sidebar-header">
 
       <div class="brand-copy">
-        <h2>TALLER <span>DJ</span></h2>
+        <h2><span>DJ</span></h2>
         <p>SOLUCIONES AUTOMOTRICES</p>
       </div>
     </div>
@@ -125,14 +125,9 @@
 
   <main class="main-content">
     <header class="topbar">
-      <div class="topbar-context">
-        <span class="context-mark"></span>
-        <span>Centro de control</span>
-      </div>
       <div class="user-info">
-        <div class="user-avatar" aria-hidden="true">{{ usuarioActual.charAt(0).toUpperCase() }}</div>
         <div class="user-copy">
-          <span class="user-label">Sesión activa</span>
+          <span class="user-label"></span>
           <strong>{{ usuarioActual }}</strong>
         </div>
         <span class="role-tag">{{ rolActual }}</span>
@@ -143,7 +138,7 @@
       <section class="dashboard-home" *ngIf="router.url === '/dashboard'">
         <div class="welcome-panel">
           <div class="welcome-copy">
-            <p class="home-eyebrow">TALLER DJ <span>·</span> PANEL PRINCIPAL</p>
+            <p class="home-eyebrow">DJ <span>·</span> PANEL PRINCIPAL</p>
             <h1>Hola, {{ usuarioActual }}</h1>
             <p class="home-description">Todo listo para mantener el taller en movimiento. Elige una sección para comenzar.</p>
           </div>

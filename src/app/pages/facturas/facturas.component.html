@@ -1,49 +1,70 @@
 <section class="billing-page">
-  <header class="page-header">
-    <div>
-      <span class="page-mark">Control financiero</span>
-      <p class="eyebrow">Administración del taller</p>
+  <header class="billing-hero">
+    <div class="hero-copy">
+      <div class="hero-label"><span class="hero-mark">GTQ</span><span>Centro de cobros</span></div>
       <h1>Facturación</h1>
-      <p>Genera facturas por orden de trabajo y administra sus conceptos.</p>
+      <p>Gestiona documentos, conceptos y pagos de las órdenes de trabajo.</p>
     </div>
-    <button class="primary-button" type="button" [disabled]="ordenesDisponibles.length === 0" (click)="abrirCrearFactura()">
-      Nueva factura
-    </button>
+    <div class="hero-action">
+      <span>¿Listo para registrar un cobro?</span>
+      <button class="primary-button" type="button" [disabled]="ordenesDisponibles.length === 0" (click)="abrirCrearFactura()">
+        <span aria-hidden="true">＋</span> Nueva factura
+      </button>
+    </div>
   </header>
 
-  <div class="toolbar-band">
-    <div class="toolbar-emblem">01</div>
-    <div><strong>Registro de facturación</strong><span>Selecciona una factura para revisar conceptos, estado y totales.</span></div>
-    <span class="toolbar-count">{{ facturas.length }} facturas</span>
-  </div>
+  <section class="summary-grid" aria-label="Resumen de facturación">
+    <article class="summary-card">
+      <span class="summary-icon documents-icon" aria-hidden="true">▤</span>
+      <div><span>Facturas registradas</span><strong>{{ facturas.length }}</strong></div>
+      <span class="summary-foot">Documentos en el sistema</span>
+    </article>
+    <article class="summary-card">
+      <span class="summary-icon selected-icon" aria-hidden="true">◉</span>
+      <div><span>Documento seleccionado</span><strong>{{ facturaSeleccionada ? ('#' + facturaSeleccionada.id_factura) : '—' }}</strong></div>
+      <span class="summary-foot">{{ facturaSeleccionada ? ('Orden de trabajo #' + facturaSeleccionada.id_orden) : 'Selecciona una factura del registro' }}</span>
+    </article>
+    <article class="summary-card summary-total">
+      <span class="summary-icon total-icon" aria-hidden="true">Q</span>
+      <div><span>Total del documento</span><strong>{{ facturaSeleccionada ? (facturaSeleccionada.total | currency:'GTQ':'symbol':'1.2-2') : '—' }}</strong></div>
+      <span class="summary-foot">{{ detalles.length }} conceptos asociados</span>
+    </article>
+  </section>
 
-  <div class="billing-layout">
-    <section class="panel invoice-list">
-      <div class="section-heading"><div><span class="section-kicker">Historial</span><h2>Facturas</h2></div><span class="section-count">{{ facturas.length }}</span></div>
-      <p *ngIf="cargandoFacturas" class="empty-state">Cargando facturas...</p>
-      <p *ngIf="!cargandoFacturas && facturas.length === 0" class="empty-state">No hay facturas registradas.</p>
+  <section class="panel invoice-register">
+    <div class="section-heading">
+      <div><span class="section-kicker">Registro</span><h2>Facturas recientes</h2></div>
+      <span class="section-count">{{ facturas.length }} documentos</span>
+    </div>
+    <p *ngIf="cargandoFacturas" class="empty-state">Cargando facturas...</p>
+    <p *ngIf="!cargandoFacturas && facturas.length === 0" class="empty-state">No hay facturas registradas.</p>
+    <div class="invoice-list" *ngIf="facturas.length > 0">
       <article class="invoice-item" *ngFor="let factura of facturas"
         [class.selected]="facturaSeleccionada?.id_factura === factura.id_factura"
         (click)="seleccionarFactura(factura)">
-        <div>
-          <strong>Factura #{{ factura.id_factura }}</strong>
-          <span>Orden #{{ factura.id_orden }} · {{ factura.fecha_emision | date:'shortDate' }}</span>
-          <span class="status" [class.paid]="factura.estado_pago === 'pagada'" [class.cancelled]="factura.estado_pago === 'anulada'">
-            {{ factura.estado_pago }}
-          </span>
+        <div class="invoice-ident">
+          <span class="invoice-symbol" aria-hidden="true">Q</span>
+          <div><strong>Factura #{{ factura.id_factura }}</strong><span>Orden #{{ factura.id_orden }} · {{ factura.fecha_emision | date:'shortDate' }}</span></div>
         </div>
+        <span class="status" [class.paid]="factura.estado_pago === 'pagada'" [class.cancelled]="factura.estado_pago === 'anulada'">
+          {{ factura.estado_pago }}
+        </span>
         <div class="invoice-actions">
           <strong>{{ factura.total | currency:'GTQ':'symbol':'1.2-2' }}</strong>
-          <button type="button" aria-label="Editar factura" (click)="abrirEditarFactura(factura, $event)">Editar</button>
-          <button type="button" class="danger-text" aria-label="Eliminar factura" (click)="eliminarFactura(factura, $event)">Eliminar</button>
+          <div>
+            <button type="button" aria-label="Editar factura" (click)="abrirEditarFactura(factura, $event)">Editar</button>
+            <button type="button" class="danger-text" aria-label="Eliminar factura" (click)="eliminarFactura(factura, $event)">Eliminar</button>
+          </div>
         </div>
       </article>
-    </section>
+    </div>
+  </section>
 
-    <section class="panel detail-panel">
+  <section class="panel detail-panel">
       <ng-container *ngIf="facturaSeleccionada; else selectInvoice">
         <div class="detail-heading">
           <div>
+            <span class="section-kicker">Detalle del documento</span>
             <h2>Factura #{{ facturaSeleccionada.id_factura }}</h2>
             <p>Orden #{{ facturaSeleccionada.id_orden }} · estado {{ facturaSeleccionada.estado_pago }}</p>
           </div>
@@ -79,12 +100,12 @@
       </ng-container>
       <ng-template #selectInvoice>
         <div class="empty-state select-invoice">
-          <h2>Selecciona una factura</h2>
-          <p>Elige una factura para consultar sus conceptos y totales.</p>
+          <span class="select-icon" aria-hidden="true">▤</span>
+          <h2>Tu detalle aparecerá aquí</h2>
+          <p>Selecciona una factura del registro para consultar sus conceptos y totales.</p>
         </div>
       </ng-template>
-    </section>
-  </div>
+  </section>
 
   <div class="modal-backdrop" *ngIf="mostrarFacturaForm" (click)="cerrarFacturaForm()">
     <section class="form-modal dialog-panel" role="dialog" aria-modal="true" aria-labelledby="invoice-form-title"

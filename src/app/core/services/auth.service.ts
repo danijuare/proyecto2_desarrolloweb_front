@@ -15,7 +15,6 @@ export class AuthService {
   login(credentials: LoginRequest): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.apiUrl}/login`, credentials).pipe(
       tap(response => {
-        // Guardamos el token y los datos devueltos por el backend
         localStorage.setItem('token', response.token);
         localStorage.setItem('id_usuario', String(response.id_usuario));
         localStorage.setItem('usuario', response.usuario);
